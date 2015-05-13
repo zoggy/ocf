@@ -1,0 +1,8 @@
+version = "@VERSION@"
+description = "Library to handle configuration files."
+requires = "@PACKAGES@"
+archive(byte) = "ocf.cma"
+archive(native) = "ocf.cmxa"
+archive(plugin,byte) = "ocf.cma"
+archive(plugin,native) = "ocf.cmxs"
+
