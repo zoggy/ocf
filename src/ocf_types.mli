@@ -26,3 +26,24 @@
 (*                                                                               *)
 (*********************************************************************************)
 
+
+type path = string list
+
+type error =
+| Invalid_value of Yojson.Safe.json
+| Invalid_path of path
+| Path_conflict of path
+
+exception Error of error
+
+val string_of_error : error -> string
+
+val invalid_value : Yojson.Safe.json -> 'a
+val invalid_path : path -> 'a
+val path_conflict : path -> 'a
+
+type 'a wrapper = {
+    to_json : 'a -> Yojson.Safe.json ;
+    from_json : Yojson.Safe.json -> 'a ;
+  }
+
