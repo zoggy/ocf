@@ -34,7 +34,8 @@ type error =
 | Invalid_value of Yojson.Safe.json
 | Invalid_path of path
 | Path_conflict of path
-| At_path of path * error
+| Error_at_path of path * error
+| Exn_at_path of path * exn
 
 exception Error of error
 
@@ -45,6 +46,7 @@ val invalid_value : Yojson.Safe.json -> 'a
 val invalid_path : path -> 'a
 val path_conflict : path -> 'a
 val error_at_path : path -> error -> 'a
+val exn_at_path : path -> exn -> 'a
 
 module Wrapper : sig
     type 'a t = {
@@ -65,9 +67,27 @@ type 'a wrapper = 'a Wrapper.t
 type 'a conf_option
 type group
 
-val option : ?desc: string -> 'a wrapper -> 'a -> 'a conf_option
+val option : ?desc: string -> ?cb: ('a -> unit) ->
+  'a wrapper -> 'a -> 'a conf_option
+
+val int : ?desc: string -> ?cb: (int -> unit) -> int -> int conf_option
+val float : ?desc: string -> ?cb: (float -> unit) -> float -> float conf_option
+val string : ?desc: string -> ?cb: (string -> unit) -> string -> string conf_option
+val list : ?desc: string -> ?cb: ('a list -> unit) -> 'a wrapper -> 
+  'a list -> 'a list conf_option
+val option_ : ?desc: string -> ?cb: ('a option -> unit) ->
+  'a wrapper -> 'a option -> 'a option conf_option
+val pair : ?desc: string -> ?cb: ('a * 'b -> unit) ->
+  'a wrapper -> 'b wrapper -> 'a * 'b -> ('a * 'b) conf_option
+val triple : ?desc: string -> ?cb: ('a * 'b * 'c -> unit) ->
+  'a wrapper -> 'b wrapper -> 'c wrapper ->
+    'a * 'b * 'c -> ('a * 'b * 'c) conf_option
+
 val get : 'a conf_option -> 'a
+
+val group : group
 val add : group -> path -> 'a conf_option -> group
+val add_group : group -> path -> group -> group
 
 val from_json : group -> Yojson.Safe.json -> unit
 val from_string : group -> string -> unit

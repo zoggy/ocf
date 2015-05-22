@@ -36,7 +36,8 @@ type error =
 | Invalid_value of Yojson.Safe.json
 | Invalid_path of path
 | Path_conflict of path
-| At_path of path * error
+| Error_at_path of path * error
+| Exn_at_path of path * exn
 
 exception Error of error
 
@@ -47,15 +48,18 @@ let rec string_of_error = function
     Printf.sprintf "Invalid value %s" (Yojson.Safe.pretty_to_string json)
 | Invalid_path p -> Printf.sprintf "Invalid path %S" (string_of_path p)
 | Path_conflict p -> Printf.sprintf "Path conflict on %S" (string_of_path p)
-| At_path (p, e) ->
+| Error_at_path (p, e) ->
     Printf.sprintf "At %S: %s" (string_of_path p) (string_of_error e)
+| Exn_at_path (p, e) ->
+    Printf.sprintf "At %S: %s" (string_of_path p) (Printexc.to_string e)
 
 let error e = raise (Error e)
 let json_error s = error (Json_error s)
 let invalid_value s = error (Invalid_value s)
 let invalid_path p = error (Invalid_path p)
 let path_conflict p = error (Path_conflict p)
-let error_at_path p e = error (At_path (p, e))
+let error_at_path p e = error (Error_at_path (p, e))
+let exn_at_path p e = error (Exn_at_path (p, e))
 
 module Wrapper =
   struct
@@ -142,18 +146,29 @@ type conf_option_ =
   { wrapper : 'a. 'a wrapper ;
     mutable value : 'a. 'a ;
     desc : string option ;
+    cb : 'a. ('a -> unit) option ;
   }
 
 type 'a conf_option = conf_option_
 
 let get o = o.value
 
-let option : ?desc: string -> 'a wrapper -> 'a -> 'a conf_option =
-  fun ?desc wrapper value ->
+let option : ?desc: string -> ?cb: ('a -> unit) ->
+  'a wrapper -> 'a -> 'a conf_option =
+  fun ?desc ?cb wrapper value ->
     { wrapper = Obj.magic wrapper ;
       value = Obj.magic value ;
       desc ;
+      cb = Obj.magic cb ;
     }
+
+let int ?desc ?cb n = option ?desc ?cb Wrapper.int n
+let float ?desc ?cb x = option ?desc ?cb Wrapper.float x
+let string ?desc ?cb s = option ?desc ?cb Wrapper.string s
+let list ?desc ?cb w l = option ?desc ?cb (Wrapper.list w) l
+let option_ ?desc ?cb w l = option ?desc ?cb (Wrapper.option w) l
+let pair ?desc ?cb w1 w2 x = option ?desc ?cb (Wrapper.pair w1 w2) x
+let triple ?desc ?cb w1 w2 w3 x = option ?desc ?cb (Wrapper.triple w1 w2 w3) x
 
 type node =
   | Option of conf_option_
@@ -163,14 +178,14 @@ and group = node SMap.t
 
 let group = SMap.empty
 
-let rec add ?(acc_path=[]) group path option =
+let rec add ?(acc_path=[]) group path node =
   match path with
     [] -> invalid_path []
   | [h] ->
       begin
         match SMap.find h group with
         | exception Not_found ->
-            SMap.add h (Option option) group
+            SMap.add h node group
         | _ ->
             path_conflict (List.rev (h::acc_path))
       end
@@ -178,7 +193,7 @@ let rec add ?(acc_path=[]) group path option =
       match SMap.find h group with
       | exception Not_found ->
           let map = add
-            ~acc_path: (h::acc_path) SMap.empty q option
+            ~acc_path: (h::acc_path) SMap.empty q node
           in
           SMap.add h (Section map) group
       | Option _ ->
@@ -187,17 +202,22 @@ let rec add ?(acc_path=[]) group path option =
           path_conflict (List.rev (h::acc_path))
       | Section map ->
           let map = add
-            ~acc_path: (h::acc_path) map q option
+            ~acc_path: (h::acc_path) map q node
           in
           SMap.add h (Section map) group
 
-let add = add ?acc_path: None
+let add_group group path g = add ?acc_path: None group path (Section g)
+let add group path option = add ?acc_path: None group path (Option option)
 
 let from_json_option path option json =
   try
-    option.value <- option.wrapper.Wrapper.from_json json
+    option.value <- option.wrapper.Wrapper.from_json json ;
+    match option.cb with
+      None -> ()
+    | Some f -> f option.value
   with
     Error e -> error_at_path path e
+  | e -> exn_at_path path e
 
 let rec from_json_group =
   let f path assocs str node =
