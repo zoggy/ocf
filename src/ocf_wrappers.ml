@@ -1,6 +1,6 @@
 (** *)
 
-open Ocf_types
+open Ocf
 
 let wrapper to_json from_json = { to_json ; from_json }
 

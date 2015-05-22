@@ -45,8 +45,8 @@ LIB_CMXS=$(LIB:.cmxa=.cmxs)
 LIB_BYTE=$(LIB:.cmxa=.cma)
 
 LIB_CMXFILES= \
-	ocf_wrappers.cmx \
-	ocf_types.cmx \
+	ocf.cmx \
+	ocf_wrappers.cmx
 
 LIB_CMOFILES=$(LIB_CMXFILES:.cmx=.cmo)
 LIB_CMIFILES=$(LIB_CMXFILES:.cmx=.cmi)

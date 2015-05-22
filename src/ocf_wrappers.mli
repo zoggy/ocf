@@ -1,6 +1,6 @@
 (** Wrappers *)
 
-open Ocf_types
+open Ocf
 
 val int : int wrapper
 val float : float wrapper
