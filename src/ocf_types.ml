@@ -29,24 +29,33 @@
 module SMap = Map.Make(String)
 
 type path = string list
+let string_of_path = String.concat "."
 
 type error =
+| Json_error of string
 | Invalid_value of Yojson.Safe.json
 | Invalid_path of path
 | Path_conflict of path
+| At_path of path * error
 
 exception Error of error
 
-let string_of_error = function
+let rec string_of_error = function
+| Json_error msg ->
+    Printf.sprintf "Error while reading JSON: %s" msg
 | Invalid_value json ->
-    Printf.sprintf "Invalid value %s" (Yojson.Safe.to_string json)
-| Invalid_path p -> Printf.sprintf "Invalid path %S" (String.concat "." p)
-| Path_conflict p -> Printf.sprintf "Path conflict on %S" (String.concat "." p)
+    Printf.sprintf "Invalid value %s" (Yojson.Safe.pretty_to_string json)
+| Invalid_path p -> Printf.sprintf "Invalid path %S" (string_of_path p)
+| Path_conflict p -> Printf.sprintf "Path conflict on %S" (string_of_path p)
+| At_path (p, e) ->
+    Printf.sprintf "At %S: %s" (string_of_path p) (string_of_error e)
 
 let error e = raise (Error e)
+let json_error s = error (Json_error s)
 let invalid_value s = error (Invalid_value s)
 let invalid_path p = error (Invalid_path p)
 let path_conflict p = error (Path_conflict p)
+let error_at_path p e = error (At_path (p, e))
 
 type 'a wrapper = {
     to_json : 'a -> Yojson.Safe.json ;
@@ -54,16 +63,18 @@ type 'a wrapper = {
   }
 
 type conf_option_ =
-  { wrappers : 'a. 'a wrapper ;
-    value : 'a. 'a ;
+  { wrapper : 'a. 'a wrapper ;
+    mutable value : 'a. 'a ;
     desc : string option ;
   }
 
 type 'a conf_option = conf_option_
 
+let get o = o.value
+
 let option : ?desc: string -> 'a wrapper -> 'a -> 'a conf_option =
-  fun ?desc wrappers value ->
-    { wrappers = Obj.magic wrappers ;
+  fun ?desc wrapper value ->
+    { wrapper = Obj.magic wrapper ;
       value = Obj.magic value ;
       desc ;
     }
@@ -76,13 +87,21 @@ and group = node SMap.t
 
 let group = SMap.empty
 
-let rec add_option ?(acc_path=[]) group path option =
+let rec add ?(acc_path=[]) group path option =
   match path with
     [] -> invalid_path []
+  | [h] ->
+      begin
+        match SMap.find h group with
+        | exception Not_found ->
+            SMap.add h (Option option) group
+        | _ ->
+            path_conflict (List.rev (h::acc_path))
+      end
   | h :: q ->
       match SMap.find h group with
       | exception Not_found ->
-          let map = add_option
+          let map = add
             ~acc_path: (h::acc_path) SMap.empty q option
           in
           SMap.add h (Section map) group
@@ -91,12 +110,66 @@ let rec add_option ?(acc_path=[]) group path option =
       | Section _ when q = [] ->
           path_conflict (List.rev (h::acc_path))
       | Section map ->
-          let map = add_option
+          let map = add
             ~acc_path: (h::acc_path) map q option
           in
           SMap.add h (Section map) group
 
+let add = add ?acc_path: None
 
+let from_json_option path option json =
+  try
+    option.value <- option.wrapper.from_json json
+  with
+    Error e -> error_at_path path e
 
+let rec from_json_group =
+  let f path assocs str node =
+    match List.assoc str assocs with
+    | exception Not_found -> ()
+    | json ->
+        match node with
+          Option o -> from_json_option (List.rev (str :: path)) o json
+        | Section map ->
+            from_json_group ~path: (str :: path) map json
+  in
+  fun ?(path=[]) map json ->
+    match json with
+      `Assoc assocs -> SMap.iter (f path assocs) map
+    | _ -> invalid_value json
 
+let from_json = from_json_group ?path: None
+
+let from_string map str =
+  try
+    let json = Yojson.Safe.from_string str in
+    from_json map json
+  with Yojson.Json_error msg ->
+    json_error msg
+
+let from_file map file =
+  try
+    let json = Yojson.Safe.from_file file in
+    from_json map json
+  with
+    Yojson.Json_error msg ->
+      json_error msg
+
+let to_json_option option = option.wrapper.to_json option.value
+
+let rec to_json_group map =
+  let f name node acc =
+    match node with
+    | Option o -> (name, to_json_option o) :: acc
+    | Section map -> (name, to_json_group map) :: acc
+  in
+  `Assoc (SMap.fold f map [])
+
+let to_json = to_json_group
+
+let to_string map = Yojson.Safe.pretty_to_string (to_json map)
+let to_file map file =
+  let oc = open_out file in
+  Yojson.Safe.pretty_to_channel oc (to_json map);
+  close_out oc
 

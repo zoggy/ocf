@@ -30,20 +30,38 @@
 type path = string list
 
 type error =
+| Json_error of string
 | Invalid_value of Yojson.Safe.json
 | Invalid_path of path
 | Path_conflict of path
+| At_path of path * error
 
 exception Error of error
 
 val string_of_error : error -> string
 
+val json_error : string -> 'a
 val invalid_value : Yojson.Safe.json -> 'a
 val invalid_path : path -> 'a
 val path_conflict : path -> 'a
+val error_at_path : path -> error -> 'a
 
 type 'a wrapper = {
     to_json : 'a -> Yojson.Safe.json ;
     from_json : Yojson.Safe.json -> 'a ;
   }
 
+type 'a conf_option
+type group
+
+val option : ?desc: string -> 'a wrapper -> 'a -> 'a conf_option
+val get : 'a conf_option -> 'a
+val add : group -> path -> 'a conf_option -> group
+
+val from_json : group -> Yojson.Safe.json -> unit
+val from_string : group -> string -> unit
+val from_file : group -> string -> unit
+
+val to_json : group -> Yojson.Safe.json
+val to_string : group -> string
+val to_file : group -> string -> unit
