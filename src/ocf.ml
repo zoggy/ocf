@@ -256,8 +256,12 @@ let to_json_option option = option.wrapper.Wrapper.to_json option.value
 let rec to_json_group map =
   let f name node acc =
     match node with
-    | Option o -> (name, to_json_option o) :: acc
     | Section map -> (name, to_json_group map) :: acc
+    | Option o -> 
+        let acc = (name, to_json_option o) :: acc in
+        match o.desc with
+          None -> acc
+        | Some str -> (name, `String str) :: acc
   in
   `Assoc (SMap.fold f map [])
 
