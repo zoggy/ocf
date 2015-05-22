@@ -57,11 +57,87 @@ let invalid_path p = error (Invalid_path p)
 let path_conflict p = error (Path_conflict p)
 let error_at_path p e = error (At_path (p, e))
 
-type 'a wrapper = {
-    to_json : 'a -> Yojson.Safe.json ;
-    from_json : Yojson.Safe.json -> 'a ;
-  }
+module Wrapper =
+  struct
+    type 'a t = {
+        to_json : 'a -> Yojson.Safe.json ;
+        from_json : Yojson.Safe.json -> 'a ;
+      }
 
+    let wrapper to_json from_json = { to_json ; from_json }
+
+    let int =
+      let to_j n = `Int n in
+      let from_j = function
+        `Int n -> n
+      | (`Intlit s)
+      | (`String s) as json ->
+          begin try int_of_string s with _ -> invalid_value json end
+      | json -> invalid_value json
+      in
+      wrapper to_j from_j
+
+    let float =
+      let to_j x = `Float x in
+      let from_j = function
+        `Float x -> x
+      | `Int n -> float n
+      | (`Intlit s)
+      | (`String s) as json ->
+          begin try float_of_string s with _ -> invalid_value json end
+      | json -> invalid_value json
+      in
+      wrapper to_j from_j
+
+    let string =
+      let to_j x = `String x in
+      let from_j = function
+        `String s -> s
+      | json -> invalid_value json
+      in
+      wrapper to_j from_j
+
+    let list w =
+      let to_j l = `List (List.map w.to_json l) in
+      let from_j = function
+      | `List l
+      | `Tuple l -> List.map w.from_json l
+      | `Null -> []
+      | json -> invalid_value json
+      in
+      wrapper to_j from_j
+
+    let option w =
+      let to_j = function None -> `Null | Some x -> w.to_json x in
+      let from_j = function
+        `Null -> None
+      | x -> Some (w.from_json x)
+      in
+      wrapper to_j from_j
+
+    let pair w1 w2 =
+      let to_j (v1, v2) = `Tuple [w1.to_json v1 ; w2.to_json v2] in
+      let from_j = function
+        `List [v1 ; v2]
+      | `Tuple [v1 ; v2] -> (w1.from_json v1, w2.from_json v2)
+      | json -> invalid_value json
+      in
+      wrapper to_j from_j
+
+    let triple w1 w2 w3 =
+      let to_j (v1, v2, v3) =
+        `Tuple [w1.to_json v1 ; w2.to_json v2 ; w3.to_json v3]
+      in
+      let from_j = function
+        `List [v1 ; v2 ; v3]
+      | `Tuple [v1 ; v2 ; v3] ->
+          (w1.from_json v1, w2.from_json v2, w3.from_json v3)
+      | json -> invalid_value json
+      in
+      wrapper to_j from_j
+  end
+
+type 'a wrapper = 'a Wrapper.t
 type conf_option_ =
   { wrapper : 'a. 'a wrapper ;
     mutable value : 'a. 'a ;
@@ -119,7 +195,7 @@ let add = add ?acc_path: None
 
 let from_json_option path option json =
   try
-    option.value <- option.wrapper.from_json json
+    option.value <- option.wrapper.Wrapper.from_json json
   with
     Error e -> error_at_path path e
 
@@ -155,7 +231,7 @@ let from_file map file =
     Yojson.Json_error msg ->
       json_error msg
 
-let to_json_option option = option.wrapper.to_json option.value
+let to_json_option option = option.wrapper.Wrapper.to_json option.value
 
 let rec to_json_group map =
   let f name node acc =

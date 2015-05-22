@@ -45,8 +45,7 @@ LIB_CMXS=$(LIB:.cmxa=.cmxs)
 LIB_BYTE=$(LIB:.cmxa=.cma)
 
 LIB_CMXFILES= \
-	ocf.cmx \
-	ocf_wrappers.cmx
+	ocf.cmx
 
 LIB_CMOFILES=$(LIB_CMXFILES:.cmx=.cmo)
 LIB_CMIFILES=$(LIB_CMXFILES:.cmx=.cmi)
@@ -71,7 +70,15 @@ $(LIB_CMXS): $(LIB_CMIFILES) $(LIB_CMXFILES)
 $(LIB_BYTE): $(LIB_CMIFILES) $(LIB_CMOFILES)
 	$(OCAMLFIND) ocamlc -a -o $@ $(LIB_CMOFILES)
 
-# Example
+# Test
+TEST=ocf_test
+
+test: $(TEST)
+	./$(TEST)
+
+$(TEST): $(LIB) ocf_test.ml
+	$(OCAMLFIND) ocamlopt -o $@ -linkpkg -package yojson $^
+
 
 .PHONY: example
 

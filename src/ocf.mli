@@ -46,11 +46,22 @@ val invalid_path : path -> 'a
 val path_conflict : path -> 'a
 val error_at_path : path -> error -> 'a
 
-type 'a wrapper = {
-    to_json : 'a -> Yojson.Safe.json ;
-    from_json : Yojson.Safe.json -> 'a ;
-  }
+module Wrapper : sig
+    type 'a t = {
+        to_json : 'a -> Yojson.Safe.json ;
+        from_json : Yojson.Safe.json -> 'a ;
+      }
 
+    val int : int t
+    val float : float t
+    val string : string t
+    val list : 'a t -> 'a list t
+    val option : 'a t -> 'a option t
+    val pair : 'a t -> 'b t -> ('a * 'b) t
+    val triple : 'a t -> 'b t -> 'c t -> ('a * 'b * 'c) t
+  end
+
+type 'a wrapper = 'a Wrapper.t
 type 'a conf_option
 type group
 
