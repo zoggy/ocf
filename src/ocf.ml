@@ -221,7 +221,7 @@ let from_json_option path option json =
 
 let rec from_json_group =
   let f path assocs str node =
-    match List.assoc str assocs with
+    match SMap.find str assocs with
     | exception Not_found -> ()
     | json ->
         match node with
@@ -231,7 +231,11 @@ let rec from_json_group =
   in
   fun ?(path=[]) map json ->
     match json with
-      `Assoc assocs -> SMap.iter (f path assocs) map
+      `Assoc assocs ->
+        let assocs = List.fold_left 
+          (fun acc (k,v) -> SMap.add k v acc) SMap.empty assocs
+        in
+        SMap.iter (f path assocs) map
     | _ -> invalid_value json
 
 let from_json = from_json_group ?path: None
