@@ -124,6 +124,7 @@ uninstall-lib:
 #####
 clean:
 	$(RM) *.cm* *.o *.a *.x *.annot dump.odoc
+	$(RM) $(TEST1) $(TEST2)
 
 distclean: clean
 

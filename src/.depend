@@ -1,0 +1,5 @@
+ocf.cmo : ocf.cmi
+ocf.cmx : ocf.cmi
+ocf.cmi :
+ocf_test.cmo : ocf.cmi
+ocf_test.cmx : ocf.cmx
