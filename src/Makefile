@@ -90,8 +90,8 @@ doc: dump.odoc
 	$(OCAMLFIND) ocamldoc -d ocamldoc -html $(OF_FLAGS) -verbose \
 	-load dump.odoc -sort -t Ocf
 
-dump.odoc:
-	$(OCAMLFIND) ocamldoc -v $(OF_FLAGS) `ls ocf*.ml ocf*.mli ` -rectypes -dump $@
+dump.odoc: ocf.mli
+	$(OCAMLFIND) ocamldoc -v $(OF_FLAGS) `ls ocf.mli ` -rectypes -dump $@
 
 docstog: dump.odoc
 	$(MKDIR) ../web/refdoc
