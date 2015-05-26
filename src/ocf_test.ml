@@ -22,3 +22,8 @@ let () = Ocf.from_string root str
 let () =
   try ignore(Ocf.add root ["foo" ; "bar" ; "x"] int_opt)
   with Ocf.Error e -> prerr_endline (Ocf.string_of_error e)
+
+let () =
+  try ignore(Ocf.from_string root
+    "{ foo: { bar : { x: \"hello\"}}}")
+  with Ocf.Error e -> prerr_endline (Ocf.string_of_error e)

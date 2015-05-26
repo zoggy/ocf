@@ -105,8 +105,7 @@ install: install-lib
 install-lib:
 	@$(OCAMLFIND) install $(PACKAGE) META \
 		$(LIB_CMIFILES) $(LIB_CMXFILES) $(LIB_OFILES) \
-		$(LIB_BYTE) $(LIB) $(LIB_A) $(LIB_CMXS) \
-
+		$(LIB_BYTE) $(LIB) $(LIB_A) $(LIB_CMXS)
 
 uninstall: uninstall-lib
 
