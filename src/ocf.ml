@@ -49,9 +49,9 @@ let rec string_of_error = function
 | Invalid_path p -> Printf.sprintf "Invalid path %S" (string_of_path p)
 | Path_conflict p -> Printf.sprintf "Path conflict on %S" (string_of_path p)
 | Error_at_path (p, e) ->
-    Printf.sprintf "At %S: %s" (string_of_path p) (string_of_error e)
+    Printf.sprintf "%S: %s" (string_of_path p) (string_of_error e)
 | Exn_at_path (p, e) ->
-    Printf.sprintf "At %S: %s" (string_of_path p) (Printexc.to_string e)
+    Printf.sprintf "%S: %s" (string_of_path p) (Printexc.to_string e)
 
 let error e = raise (Error e)
 let json_error s = error (Json_error s)
@@ -95,8 +95,10 @@ module Wrapper =
 
     let string_to_json x = `String x
     let string_from_json = function
-        `String s -> s
-      | json -> invalid_value json
+    | `Intlit s
+    | `String s -> s
+    | `Int n -> string_of_int n
+    | json -> invalid_value json
 
     let string =
       wrapper string_to_json string_from_json
@@ -282,3 +284,31 @@ let to_file map file =
   Yojson.Safe.pretty_to_channel oc (to_json map);
   close_out oc
 
+let to_arg option ?doc key =
+  let doc =
+    match doc, option.desc with
+      Some s, _
+    | None, Some s -> s
+    | None, None -> ""
+  in
+  let f str =
+    try
+      let json =
+        try Yojson.Safe.from_string str
+        with Yojson.Json_error msg ->
+            try
+              Yojson.Safe.from_string (Printf.sprintf "%S" str)
+            with Yojson.Json_error _ ->
+                json_error msg
+      in
+      from_json_option [key] option json
+    with
+      Error e ->
+        let msg =
+          match e with
+          | Json_error msg -> Printf.sprintf "%s: %s" key msg
+          | _ -> string_of_error e
+        in
+        raise (Arg.Bad msg)
+  in
+  (key, Arg.String f, doc)

@@ -44,5 +44,4 @@ port=8080, host="myserver.net"
     "host": "myserver.net"
   }
 }
-
 ````

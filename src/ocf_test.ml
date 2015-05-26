@@ -3,7 +3,8 @@
 let int_opt = Ocf.int ~desc:"this is x"
   ~cb: (fun n -> prerr_endline ("x="^(string_of_int n))) 0
 let float_opt = Ocf.float 3.14
-let string_opt = Ocf.string ~cb: prerr_endline "hello world!"
+let string_opt = Ocf.string ~desc: "string option"
+  ~cb: prerr_endline "hello world!"
 let opt_opt = Ocf.option_ Ocf.Wrapper.int None
 
 let group = Ocf.group
@@ -27,3 +28,14 @@ let () =
   try ignore(Ocf.from_string root
     "{ foo: { bar : { x: \"hello\"}}}")
   with Ocf.Error e -> prerr_endline (Ocf.string_of_error e)
+
+let options =
+  [ Ocf.to_arg int_opt "-x" ;
+    Ocf.to_arg string_opt "-str" ;
+  ]
+
+let () = Arg.parse options
+  (fun _ -> ())
+    (Printf.sprintf "Usage: %s [options]\nwhere options are:" Sys.argv.(0))
+
+  

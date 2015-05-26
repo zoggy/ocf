@@ -143,3 +143,16 @@ the options it contains, with their current value.
 val to_json : group -> Yojson.Safe.json
 val to_string : group -> string
 val to_file : group -> string -> unit
+
+(** {2 Building command line arguments} *)
+
+(** [to_arg option key] build a command line option description
+  to use with the [Arg] module. If [doc] is not provided, then
+  the description string of the option is used, if there is one;
+  else the doc string is empty (preventing the option to appear
+  in the list of options, see [Arg] module documentation).
+  [key] is the option name, like ["-n"].
+*)
+val to_arg :
+  'a conf_option -> ?doc: Arg.doc -> Arg.key -> Arg.key * Arg.spec * Arg.doc
+
