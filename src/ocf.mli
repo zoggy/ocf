@@ -72,6 +72,7 @@ module Wrapper : sig
     val int : int t
     val float : float t
     val string : string t
+    val string_ : ('a -> string) -> (string -> 'a) -> 'a t
     val list : 'a t -> 'a list t
     val option : 'a t -> 'a option t
     val pair : 'a t -> 'b t -> ('a * 'b) t

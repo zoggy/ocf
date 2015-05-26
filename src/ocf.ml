@@ -93,12 +93,17 @@ module Wrapper =
       in
       wrapper to_j from_j
 
-    let string =
-      let to_j x = `String x in
-      let from_j = function
+    let string_to_json x = `String x
+    let string_from_json = function
         `String s -> s
       | json -> invalid_value json
-      in
+
+    let string =
+      wrapper string_to_json string_from_json
+
+    let string_ to_str from_str =
+      let to_j x = string_to_json (to_str x) in
+      let from_j x = from_str (string_from_json x) in
       wrapper to_j from_j
 
     let list w =
@@ -232,7 +237,7 @@ let rec from_json_group =
   fun ?(path=[]) map json ->
     match json with
       `Assoc assocs ->
-        let assocs = List.fold_left 
+        let assocs = List.fold_left
           (fun acc (k,v) -> SMap.add k v acc) SMap.empty assocs
         in
         SMap.iter (f path assocs) map
@@ -261,7 +266,7 @@ let rec to_json_group map =
   let f name node acc =
     match node with
     | Section map -> (name, to_json_group map) :: acc
-    | Option o -> 
+    | Option o ->
         let acc = (name, to_json_option o) :: acc in
         match o.desc with
           None -> acc
