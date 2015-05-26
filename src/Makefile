@@ -71,12 +71,21 @@ $(LIB_BYTE): $(LIB_CMIFILES) $(LIB_CMOFILES)
 	$(OCAMLFIND) ocamlc -a -o $@ $(LIB_CMOFILES)
 
 # Test
-TEST=ocf_test
+TEST1=ocf_test
+TEST2=ocf_test2
 
-test: $(TEST)
-	./$(TEST)
+test: test1 test2
 
-$(TEST): $(LIB) ocf_test.ml
+test1: $(TEST1)
+	./$(TEST1)
+
+test2: $(TEST2)
+	./$(TEST2)
+
+$(TEST1): $(LIB) ocf_test.ml
+	$(OCAMLFIND) ocamlopt -o $@ -linkpkg -package yojson $^
+
+$(TEST2): $(LIB) ocf_test2.ml
 	$(OCAMLFIND) ocamlopt -o $@ -linkpkg -package yojson $^
 
 
