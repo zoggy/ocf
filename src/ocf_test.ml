@@ -21,9 +21,9 @@ let () = print_endline str
 let () = Ocf.from_string root str
 
 
-type t = {
+type 'a t = {
     t_int : int  [@ocf Ocf.Wrapper.int, 10] [@ocf.label "n"];
-    t_list : string list [@ocf Ocf.Wrapper.list Ocf.Wrapper.string, []] ;
+    t_list : 'a list [@ocf Ocf.Wrapper.list, []] ;
   } [@@ocf]
 (*
 let default_t = { t_int = 10 ; t_list = [] }
@@ -65,10 +65,10 @@ let t_wrapper =
 *)
 let print_t t = print_endline
   (Printf.sprintf "{ t_int = %d ; t_list = [%s] }"
-    t.t_int (String.concat " ; " t.t_list))
+    t.t_int (String.concat " ; " t.t_list) )
 
 let t_opt = Ocf.option ~cb: (List.iter print_t)
-  (Ocf.Wrapper.list t_wrapper) []
+  (Ocf.Wrapper.list(t_wrapper Ocf.Wrapper.string )) []
 let root = Ocf.add root ["t"] t_opt
 
 let () = ignore(Ocf.from_string root

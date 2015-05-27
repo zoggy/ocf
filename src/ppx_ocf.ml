@@ -48,6 +48,15 @@ let mk_list loc l = List.fold_right
      (Some (Ast_helper.Exp.tuple [ e ; acc ])))
   l empty_list
 
+(*c==v=[List.list_remove_doubles]=1.0====*)
+let list_remove_doubles ?(pred=(=)) l =
+  List.fold_left
+    (fun acc e -> if List.exists (pred e) acc then acc else e :: acc)
+    []
+    (List.rev l)
+(*/c==v=[List.list_remove_doubles]=1.0====*)
+
+
 let error loc msg = raise (Location.Error (Location.error ~loc msg))
 let kerror loc = Printf.ksprintf (error loc)
 
@@ -77,9 +86,18 @@ let has_ocf_attribute attrs =
 type field =
   { name : string loc ;
     label : string loc ;
+    params : string list ;
     wrapper : expression ;
     default : expression ;
   }
+
+let params_of_type_params l =
+  let f ct acc =
+    match ct.ptyp_desc with
+      Ptyp_var s -> s :: acc
+    | _ -> acc
+  in
+  list_remove_doubles (List.fold_right f l [])
 
 let mk_field l =
   let label =
@@ -111,7 +129,8 @@ let mk_field l =
     | (_, PStr [ { pstr_desc = Pstr_eval (e,_) } ]) ->
         begin
           match e.pexp_desc with
-          | Pexp_tuple[wrapper;default] -> (wrapper, default)
+          | Pexp_tuple[wrapper;default] ->
+              (wrapper, default)
           | _ ->
               kerror e.pexp_loc
                 "Invalid expression; a pair of expressions is expected"
@@ -121,8 +140,13 @@ let mk_field l =
           "Invalid expression for %s; a pair of expressions is expected"
           ocf_att_prefix
   in
+  let params =
+    match l.pld_type.ptyp_desc with
+      Ptyp_constr (_,params) -> params_of_type_params params
+    | _ -> []
+  in
   { name = l.pld_name ;
-    label ; wrapper ; default
+    label ; params ; wrapper ; default
   }
 
 let mk_default decl fields =
@@ -134,12 +158,24 @@ let mk_default decl fields =
   Vb.mk pat record
 
 let mk_wrapper decl fields =
+  let params = params_of_type_params 
+    (List.map fst decl.ptype_params)
+  in
   let w_name fd = Printf.sprintf "__wrapper_%s" fd.name.txt in
   let w_lid fd = Exp.ident (lid fd.name.loc (w_name fd)) in
 
   let mk_wrapper expr fd =
     let pat = Pat.var { loc = fd.name.loc ; txt = w_name fd } in
-    [%expr let [%p pat] = [%e fd.wrapper] in [%e expr] ]
+    let app =
+      match fd.params with
+      | [] -> fd.wrapper
+      | _ ->
+          apply ~loc: fd.name.loc fd.wrapper
+            (List.map
+             (fun p -> Exp.ident (lid fd.name.loc ("wrapper_"^p)))
+               fd.params)
+    in
+    [%expr let [%p pat] = [%e app] in [%e expr] ]
   in
   let to_json_exprs =
     let f fd =
@@ -193,6 +229,13 @@ let mk_wrapper decl fields =
     ]
   in
   let expr = List.fold_left mk_wrapper expr fields in
+  let expr =
+    let f param expr =
+      let pat = Pat.var { loc = decl.ptype_loc ; txt = "wrapper_"^param } in
+      [%expr fun [%p pat] -> [%e expr] ]
+    in
+    List.fold_right f params expr
+  in
   let pat = Pat.var
     (Location.mkloc (decl.ptype_name.txt^"_wrapper") decl.ptype_loc)
   in
