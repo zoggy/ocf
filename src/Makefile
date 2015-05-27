@@ -77,13 +77,13 @@ $(LIB_CMXS): $(LIB_CMIFILES) $(LIB_CMXFILES)
 $(LIB_BYTE): $(LIB_CMIFILES) $(LIB_CMOFILES)
 	$(OCAMLFIND) ocamlc -a -o $@ $(LIB_CMOFILES)
 
-$(PPX):
-	$(MAKE) PACKAGES=$(PACKAGES),compiler-libs $(PPX_CMXFILES)
+$(PPX): $(PPX_CMXFILES:.cmx=.ml)
+	$(MAKE) PACKAGES=$(PACKAGES),ppx_tools.metaquot $(PPX_CMXFILES)
 	$(OCAMLFIND) ocamlopt -o $@ $(COMPFLAGS) -package ppx_tools.metaquot \
 	$(COMPFLAGS) -linkpkg $(PPX_CMXFILES)
 
-$(PPX_BYTE):
-	$(MAKE) PACKAGES=$(PACKAGES),compiler-libs $(PPX_CMOFILES)
+$(PPX_BYTE): $(PPX_CMOFILES:.cmo=.ml)
+	$(MAKE) PACKAGES=$(PACKAGES),ppx_tools.metaquot $(PPX_CMOFILES)
 	$(OCAMLFIND) ocamlc -o $@ $(COMPFLAGS) -package ppx_tools.metaquot \
 	$(COMPFLAGS) -linkpkg $(PPX_CMOFILES)
 
@@ -99,8 +99,9 @@ test1: $(TEST1)
 test2: $(TEST2)
 	./$(TEST2)
 
-$(TEST1): $(LIB) ocf_test.ml
-	$(OCAMLFIND) ocamlopt -o $@ -linkpkg -package yojson $^
+$(TEST1): $(LIB) $(PPX) ocf_test.ml
+	$(OCAMLFIND) ocamlopt -verbose -o $@ -ppx ./ppx_ocf -linkpkg -package yojson \
+	$(LIB) ocf_test.ml
 
 $(TEST2): $(LIB) ocf_test2.ml
 	$(OCAMLFIND) ocamlopt -o $@ -linkpkg -package yojson $^
@@ -131,7 +132,8 @@ install: install-lib
 install-lib:
 	@$(OCAMLFIND) install $(PACKAGE) META \
 		$(LIB_CMIFILES) $(LIB_CMXFILES) $(LIB_OFILES) \
-		$(LIB_BYTE) $(LIB) $(LIB_A) $(LIB_CMXS)
+		$(LIB_BYTE) $(LIB) $(LIB_A) $(LIB_CMXS) \
+		$(PPX) $(PPX_BYTE)
 
 uninstall: uninstall-lib
 

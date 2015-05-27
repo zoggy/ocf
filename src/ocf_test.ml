@@ -24,8 +24,8 @@ let () = Ocf.from_string root str
 type t = {
     t_int : int  [@ocf Ocf.Wrapper.int, 10] [@ocf.label "n"];
     t_list : string list [@ocf Ocf.Wrapper.list Ocf.Wrapper.string, []] ;
-  }
-
+  } [@@ocf]
+(*
 let default_t = { t_int = 10 ; t_list = [] }
 let t_wrapper =
   let t_int_wrapper = Ocf.Wrapper.int in
@@ -62,7 +62,7 @@ let t_wrapper =
     | (json : Yojson.Safe.json) -> Ocf.invalid_value json
   in
   Ocf.Wrapper.wrapper to_j from_j
-
+*)
 let print_t t = print_endline
   (Printf.sprintf "{ t_int = %d ; t_list = [%s] }"
     t.t_int (String.concat " ; " t.t_list))
