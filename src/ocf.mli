@@ -69,6 +69,7 @@ module Wrapper : sig
         from_json : Yojson.Safe.json -> 'a ;
       }
 
+    val wrapper : ('a -> Yojson.Safe.json) -> (Yojson.Safe.json -> 'a) -> 'a t
     val int : int t
     val float : float t
     val string : string t
