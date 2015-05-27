@@ -31,6 +31,8 @@
 (** To represent option names from root. *)
 type path = string list
 
+module SMap : Map.S with type key = string
+
 (** {2 Errors} *)
 
 type error =

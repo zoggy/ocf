@@ -51,13 +51,20 @@ LIB_CMOFILES=$(LIB_CMXFILES:.cmx=.cmo)
 LIB_CMIFILES=$(LIB_CMXFILES:.cmx=.cmi)
 LIB_OFILES=$(LIB_CMXFILES:.cmx=.o)
 
+# PPX
+
+PPX=ppx_ocf
+PPX_BYTE=$(PPX).byte
+PPX_CMXFILES=ppx_ocf.cmx
+PPX_CMOFILES=$(PPX_CMXFILES:.cmx=.cmo)
+
 #
 
 all: opt byte
 
-opt: $(LIB) $(LIB_CMXS)
-
-byte: $(LIB_BYTE)
+opt: $(LIB) $(LIB_CMXS) $(PPX)
+byte: $(LIB_BYTE) $(PPX_BYTE)
+ppx: $(PPX)
 
 # Base
 
@@ -69,6 +76,16 @@ $(LIB_CMXS): $(LIB_CMIFILES) $(LIB_CMXFILES)
 
 $(LIB_BYTE): $(LIB_CMIFILES) $(LIB_CMOFILES)
 	$(OCAMLFIND) ocamlc -a -o $@ $(LIB_CMOFILES)
+
+$(PPX):
+	$(MAKE) PACKAGES=$(PACKAGES),compiler-libs $(PPX_CMXFILES)
+	$(OCAMLFIND) ocamlopt -o $@ $(COMPFLAGS) -package ppx_tools.metaquot \
+	$(COMPFLAGS) -linkpkg $(PPX_CMXFILES)
+
+$(PPX_BYTE):
+	$(MAKE) PACKAGES=$(PACKAGES),compiler-libs $(PPX_CMOFILES)
+	$(OCAMLFIND) ocamlc -o $@ $(COMPFLAGS) -package ppx_tools.metaquot \
+	$(COMPFLAGS) -linkpkg $(PPX_CMOFILES)
 
 # Test
 TEST1=ocf_test
@@ -124,6 +141,7 @@ uninstall-lib:
 #####
 clean:
 	$(RM) *.cm* *.o *.a *.x *.annot dump.odoc
+	$(RM) $(PPX) $(PPX_BYTE)
 	$(RM) $(TEST1) $(TEST2)
 
 distclean: clean

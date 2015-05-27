@@ -2,5 +2,6 @@ dump.odoc
 ocf_test
 ocf_test2
 ocamldoc
+ppx_ocf
 
 
