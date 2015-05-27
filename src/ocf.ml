@@ -152,7 +152,7 @@ type 'a wrapper = 'a Wrapper.t
 type conf_option_ =
   { wrapper : 'a. 'a wrapper ;
     mutable value : 'a. 'a ;
-    desc : string option ;
+    doc : string option ;
     cb : 'a. ('a -> unit) option ;
   }
 
@@ -160,22 +160,22 @@ type 'a conf_option = conf_option_
 
 let get o = o.value
 
-let option : ?desc: string -> ?cb: ('a -> unit) ->
+let option : ?doc: string -> ?cb: ('a -> unit) ->
   'a wrapper -> 'a -> 'a conf_option =
-  fun ?desc ?cb wrapper value ->
+  fun ?doc ?cb wrapper value ->
     { wrapper = Obj.magic wrapper ;
       value = Obj.magic value ;
-      desc ;
+      doc ;
       cb = Obj.magic cb ;
     }
 
-let int ?desc ?cb n = option ?desc ?cb Wrapper.int n
-let float ?desc ?cb x = option ?desc ?cb Wrapper.float x
-let string ?desc ?cb s = option ?desc ?cb Wrapper.string s
-let list ?desc ?cb w l = option ?desc ?cb (Wrapper.list w) l
-let option_ ?desc ?cb w l = option ?desc ?cb (Wrapper.option w) l
-let pair ?desc ?cb w1 w2 x = option ?desc ?cb (Wrapper.pair w1 w2) x
-let triple ?desc ?cb w1 w2 w3 x = option ?desc ?cb (Wrapper.triple w1 w2 w3) x
+let int ?doc ?cb n = option ?doc ?cb Wrapper.int n
+let float ?doc ?cb x = option ?doc ?cb Wrapper.float x
+let string ?doc ?cb s = option ?doc ?cb Wrapper.string s
+let list ?doc ?cb w l = option ?doc ?cb (Wrapper.list w) l
+let option_ ?doc ?cb w l = option ?doc ?cb (Wrapper.option w) l
+let pair ?doc ?cb w1 w2 x = option ?doc ?cb (Wrapper.pair w1 w2) x
+let triple ?doc ?cb w1 w2 w3 x = option ?doc ?cb (Wrapper.triple w1 w2 w3) x
 
 type node =
   | Option of conf_option_
@@ -264,29 +264,31 @@ let from_file map file =
 
 let to_json_option option = option.wrapper.Wrapper.to_json option.value
 
-let rec to_json_group map =
+let rec to_json_group ?(with_doc=true) map =
   let f name node acc =
     match node with
-    | Section map -> (name, to_json_group map) :: acc
+    | Section map -> (name, to_json_group ~with_doc map) :: acc
     | Option o ->
         let acc = (name, to_json_option o) :: acc in
-        match o.desc with
-          None -> acc
-        | Some str -> (name, `String str) :: acc
+        match with_doc, o.doc with
+        | true, Some str -> (name, `String str) :: acc
+        | false, _
+        | _, None -> acc
   in
   `Assoc (SMap.fold f map [])
 
 let to_json = to_json_group
 
-let to_string map = Yojson.Safe.pretty_to_string (to_json map)
-let to_file map file =
+let to_string ?with_doc map =
+  Yojson.Safe.pretty_to_string (to_json ?with_doc map)
+let to_file ?with_doc map file =
   let oc = open_out file in
-  Yojson.Safe.pretty_to_channel oc (to_json map);
+  Yojson.Safe.pretty_to_channel oc (to_json ?with_doc map);
   close_out oc
 
 let to_arg option ?doc key =
   let doc =
-    match doc, option.desc with
+    match doc, option.doc with
       Some s, _
     | None, Some s -> s
     | None, None -> ""

@@ -90,10 +90,10 @@ type 'a conf_option
 
 (** [option wrapper v] creates an option with initial value [v]
   and using the given [wrapper] to read and write from and to JSON.
-  @param desc an optional description for the option.
+  @param doc an optional description for the option.
   @param cb an optional function to call each time the option is read.
 *)
-val option : ?desc: string -> ?cb: ('a -> unit) ->
+val option : ?doc: string -> ?cb: ('a -> unit) ->
   'a wrapper -> 'a -> 'a conf_option
 
 (** [get option] returns the value of the given option. *)
@@ -114,16 +114,16 @@ val add_group : group -> path -> group -> group
 
 (** {3 Convenient functions to create options} *)
 
-val int : ?desc: string -> ?cb: (int -> unit) -> int -> int conf_option
-val float : ?desc: string -> ?cb: (float -> unit) -> float -> float conf_option
-val string : ?desc: string -> ?cb: (string -> unit) -> string -> string conf_option
-val list : ?desc: string -> ?cb: ('a list -> unit) -> 'a wrapper ->
+val int : ?doc: string -> ?cb: (int -> unit) -> int -> int conf_option
+val float : ?doc: string -> ?cb: (float -> unit) -> float -> float conf_option
+val string : ?doc: string -> ?cb: (string -> unit) -> string -> string conf_option
+val list : ?doc: string -> ?cb: ('a list -> unit) -> 'a wrapper ->
   'a list -> 'a list conf_option
-val option_ : ?desc: string -> ?cb: ('a option -> unit) ->
+val option_ : ?doc: string -> ?cb: ('a option -> unit) ->
   'a wrapper -> 'a option -> 'a option conf_option
-val pair : ?desc: string -> ?cb: ('a * 'b -> unit) ->
+val pair : ?doc: string -> ?cb: ('a * 'b -> unit) ->
   'a wrapper -> 'b wrapper -> 'a * 'b -> ('a * 'b) conf_option
-val triple : ?desc: string -> ?cb: ('a * 'b * 'c -> unit) ->
+val triple : ?doc: string -> ?cb: ('a * 'b * 'c -> unit) ->
   'a wrapper -> 'b wrapper -> 'c wrapper ->
     'a * 'b * 'c -> ('a * 'b * 'c) conf_option
 
@@ -138,11 +138,14 @@ val from_file : group -> string -> unit
 
 The following functions output the current state of the group, i.e.
 the options it contains, with their current value.
+
+The [with_doc] parameter indicates whether to output doc associated
+to options. Default is [true].
 *)
 
-val to_json : group -> Yojson.Safe.json
-val to_string : group -> string
-val to_file : group -> string -> unit
+val to_json : ?with_doc: bool -> group -> Yojson.Safe.json
+val to_string : ?with_doc: bool -> group -> string
+val to_file : ?with_doc: bool -> group -> string -> unit
 
 (** {2 Building command line arguments} *)
 

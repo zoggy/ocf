@@ -1,9 +1,9 @@
 (** *)
 
-let int_opt = Ocf.int ~desc:"this is x"
+let int_opt = Ocf.int ~doc: "this is x"
   ~cb: (fun n -> prerr_endline ("x="^(string_of_int n))) 0
 let float_opt = Ocf.float 3.14
-let string_opt = Ocf.string ~desc: "string option"
+let string_opt = Ocf.string ~doc: "string option"
   ~cb: prerr_endline "hello world!"
 let opt_opt = Ocf.option_ Ocf.Wrapper.int None
 
