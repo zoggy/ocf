@@ -1,0 +1,45 @@
+<sw-page navbar-doc="active" title="Documentation">
+
+
+<p>
+Read the <doc href="/refdoc/Ocf.html">reference documentation</doc>.
+</p>
+
+<section id="example" title="Example">
+
+<p>
+Let's create the <ml>host</ml> and <ml>port</ml> options
+with default values <ml>"localhost"</ml> and <ml>80</ml>:
+</p>
+<oc>
+let host = Ocf.string ~doc: "Host name" "localhost";;
+let port = Ocf.int ~doc: "Port number" 80;;
+</oc>
+<p>
+The <ml>~doc</ml> parameter is used to given some description of the
+option. It will be used later. Note that <ml>Ocf.string</ml> and
+<ml>Ocf.int</ml> return typed options, here
+with types <ml>string Ocf.conf_option</ml> and <ml>int Ocf.conf_option</ml>.
+These functions are specialisations of the
+<doc href="Ocf#VALoption">Ocf.option</doc> function. Other such
+functions are provided (see <doc href="Ocf#convenient">here</doc>).
+</p>
+<p>
+Now we create a group <ml>server_options</ml>. A group is a set of
+groups and options, each having a path (a list of strings) from
+the root of the group. Each part of a path is mapped to a
+field in JSON objects.
+</p>
+<oc>let server_options =
+  let g = Ocf.add Ocf.group ["host"] host in
+  Ocf.add g ["port"] port ;;
+</oc>
+<p>Note that <ml>Ocf.group</ml> is not a function. Adding things
+to the group returns a new one. Here we associated our option
+<ml>host</ml> to the path <ml>["host"]</ml>, and <ml>port</ml>
+to the path <ml>["port"]</ml>.
+</p>
+<p>To be continued...</p>
+</section>
+
+</sw-page>

@@ -25,44 +25,7 @@ type 'a t = {
     t_int : int  [@ocf Ocf.Wrapper.int, 10] [@ocf.label "n"];
     t_list : 'a list [@ocf Ocf.Wrapper.list, []] ;
   } [@@ocf]
-(*
-let default_t = { t_int = 10 ; t_list = [] }
-let t_wrapper =
-  let t_int_wrapper = Ocf.Wrapper.int in
-  let t_list_wrapper = Ocf.Wrapper.list Ocf.Wrapper.string in
-  let to_j = fun t ->
-    `Assoc
-      [ "n", t_int_wrapper.Ocf.Wrapper.to_json t.t_int ;
-        "t_list", t_list_wrapper.Ocf.Wrapper.to_json t.t_list ;
-      ]
-  in
-  let get w def label map =
-    match Ocf.SMap.find label map with
-    | exception Not_found -> def
-    | json ->
-       try w.Ocf.Wrapper.from_json json
-       with
-       | Ocf.Error e ->
-           Ocf.error_at_path [label] e
-       | e ->
-           Ocf.exn_at_path [label] e
-  in
-  let from_assocs map =
-    {
-     t_int = get t_int_wrapper 10 "n" map ;
-     t_list = get t_list_wrapper [] "t_list" map ;
-    }
-  in
-  let from_j = function
-    | `Assoc l ->
-        let assocs = List.fold_left
-          (fun acc (k,v) -> Ocf.SMap.add k v acc) Ocf.SMap.empty l
-        in
-        from_assocs assocs
-    | (json : Yojson.Safe.json) -> Ocf.invalid_value json
-  in
-  Ocf.Wrapper.wrapper to_j from_j
-*)
+
 let print_t t = print_endline
   (Printf.sprintf "{ t_int = %d ; t_list = [%s] }"
     t.t_int (String.concat " ; " t.t_list) )

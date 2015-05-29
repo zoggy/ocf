@@ -117,6 +117,11 @@ doc: dump.odoc
 	$(OCAMLFIND) ocamldoc -d ocamldoc -html $(OF_FLAGS) -verbose \
 	-load dump.odoc -sort -t Ocf
 
+docstog: dump.odoc
+	$(MKDIR) ../web/refdoc
+	ocamldoc.opt -t "Ocf reference documentation" \
+	-load $^ -d ../web/refdoc -g odoc_stog.cmxs
+
 dump.odoc: ocf.mli
 	$(OCAMLFIND) ocamldoc -v $(OF_FLAGS) `ls ocf.mli ` -rectypes -dump $@
 

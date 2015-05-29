@@ -14,8 +14,8 @@ This installs the `ocf` package.
 ### Example
 
 ````ocaml
-let port = Ocf.int ~desc: "Port number" 80
-let host = Ocf.string ~desc: "Host name" "localhost"
+let port = Ocf.int ~doc: "Port number" 80
+let host = Ocf.string ~doc: "Host name" "localhost"
 let server_options =
   let g = Ocf.group in
   let g = Ocf.add g ["port"] port in

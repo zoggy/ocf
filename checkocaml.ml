@@ -902,6 +902,7 @@ let _ = !print "\n### checking required tools and libraries ###\n"
 
 
 let _ = check_ocamlfind_package conf ~min_version: [1;1;8] "yojson"
+let _ = check_ocamlfind_package conf ~min_version: [0;99] "ppx_tools"
 
 let _ = !print "\n###\n"
 

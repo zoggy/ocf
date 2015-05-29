@@ -84,7 +84,7 @@ module Wrapper : sig
 
 type 'a wrapper = 'a Wrapper.t
 
-(** {2 options and option groups} *)
+(** {2 Options and option groups} *)
 
 (** An option with a value of type ['a]. When the option is found
   in a JSON code (see {!reading}), the value is modified in place.
@@ -115,7 +115,7 @@ val add : group -> path -> 'a conf_option -> group
 (** [add_group group path g] adds the group [g] to [group] at [path].*)
 val add_group : group -> path -> group -> group
 
-(** {3 Convenient functions to create options} *)
+(** {3:convenient Convenient functions to create options} *)
 
 val int : ?doc: string -> ?cb: (int -> unit) -> int -> int conf_option
 val float : ?doc: string -> ?cb: (float -> unit) -> float -> float conf_option
