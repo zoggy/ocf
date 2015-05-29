@@ -128,7 +128,7 @@ dump.odoc: ocf.mli
 docstog: dump.odoc
 	$(MKDIR) ../web/refdoc
 	$(OCAMLFIND) ocamldoc 	-load dump.odoc \
-	-t Ojs-base -d ../web/refdoc -g odoc_stog.cmo
+	-t Ocf -d ../web/refdoc -g odoc_stog.cmo
 
 
 ##########

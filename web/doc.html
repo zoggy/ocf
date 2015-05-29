@@ -27,7 +27,7 @@ functions are provided (see <doc href="Ocf#convenient">here</doc>).
 <p>
 Now we create a group <ml>server_options</ml>. A group is a set of
 groups and options, each having a path (a list of strings) from
-the root of the group. Each part of a path is mapped to a
+the root of the group. Each part of a path will be mapped to a
 field in JSON objects.
 </p>
 <oc>let server_options =
@@ -35,11 +35,39 @@ field in JSON objects.
   Ocf.add g ["port"] port ;;
 </oc>
 <p>Note that <ml>Ocf.group</ml> is not a function. Adding things
-to the group returns a new one. Here we associated our option
-<ml>host</ml> to the path <ml>["host"]</ml>, and <ml>port</ml>
-to the path <ml>["port"]</ml>.
+to the group returns a new one. Here we built a new group by
+adding our option <ml>host</ml> to the path <ml>["host"]</ml>,
+and <ml>port</ml> to the path <ml>["port"]</ml>.
 </p>
-<p>To be continued...</p>
+<p>We can already load values for our options from a JSON string
+(the library also provide functions to read from and write to
+JSON files). Let's define a JSON string and read it to get
+values:
+</p>
+<oc>
+let () = Ocf.from_string server_options
+  {| { host: "foo.bar.net", port: 8080 } |};;
+</oc>
+<p>
+Let's see the values of our options:
+</p>
+<oc>
+Ocf.get host ;;
+Ocf.get port ;;
+</oc>
+<p>
+We can read another JSON string. Values defined in this JSON will
+replace the previous values of our options, but of course only
+when values are given.
+</p>
+<oc>
+let () = Ocf.from_string server_options
+  {| { host: "my.host.org" } |} ;;
+Ocf.get host (* changed *);;
+Ocf.get port (* unchanged *) ;;
+</oc>
+
+<p>To be continued !</p>
 </section>
 
 </sw-page>
