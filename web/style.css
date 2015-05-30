@@ -2,7 +2,7 @@
 /* Common partial files */
 /* from https://gist.github.com/moyarich/3260638 */
 /* reset properties */
-html, body, div, span,
+html, body, div, span
 h1, h2, h3, h4, h5, h6, p {
   margin: 0;
   padding: 0;
@@ -140,6 +140,7 @@ p + ul {
   margin-top: -10.5px; }
 
 pre {
+  font-family: "Lucida Console", Monospace;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -154,7 +155,8 @@ pre {
   word-break: break-all;
   line-height: 1.5em; }
 
-code {
+code, span.icode {
+  font-family: "Lucida Console", Monospace;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
