@@ -110,7 +110,7 @@ some type from and to JSON.<br/>
 <pre><span id="TYPEconf_option"><span class="keyword">type</span> <code class="type">'a</code> conf_option</span> </pre>
 <div class="info ">
 An option with a value of type <code class="code">'a</code>. When the option is found
-  in a JSON code (see <a href="Ocf.html#reading"><i>Reading options</i></a>), the value is modified in place.
+  in a JSON code (see <a href="Ocf.html#input"><i>Reading options</i></a>), the value is modified in place.
   Use <a href="Ocf.html#VALget"><code class="code">Ocf.get</code></a> to retrieve the option value.<br/>
 </div>
 
@@ -154,12 +154,12 @@ Create a new empty group.<br/>
 <pre><span id="VALoption_"><span class="keyword">val</span> option_</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a option -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a option -&gt; 'a option <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
 <pre><span id="VALpair"><span class="keyword">val</span> pair</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a * 'b -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'b <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a * 'b -&gt; ('a * 'b) <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
 <pre><span id="VALtriple"><span class="keyword">val</span> triple</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a * 'b * 'c -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt;<br/>       'b <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt;<br/>       'c <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a * 'b * 'c -&gt; ('a * 'b * 'c) <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre><br/>
-<div class="section-title" id="reading">Reading options</div><br/>
+<div class="section-title" id="input">Reading options</div><br/>
 
 <pre><span id="VALfrom_json"><span class="keyword">val</span> from_json</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; Yojson.Safe.json -&gt; unit</code></pre>
 <pre><span id="VALfrom_string"><span class="keyword">val</span> from_string</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre>
 <pre><span id="VALfrom_file"><span class="keyword">val</span> from_file</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre><br/>
-<div class="section-title" id="2_Writingoptions">Writing options</div>
+<div class="section-title" id="output">Writing options</div>
 <div class="vertical-space"> </div>
 
 The following functions output the current state of the group, i.e.

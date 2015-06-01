@@ -5,8 +5,9 @@
 Read the <doc href="/refdoc/Ocf.html">reference documentation</doc>.
 </p>
 
-<section id="example" title="Example">
-
+<prepare-toc>
+<toc/>
+<section id="options" title="Defining options">
 <p>
 Let's create the <ml>host</ml> and <ml>port</ml> options
 with default values <ml>"localhost"</ml> and <ml>80</ml>:
@@ -21,9 +22,15 @@ option. It will be used later. Note that <ml>Ocf.string</ml> and
 <ml>Ocf.int</ml> return typed options, here
 with types <ml>string Ocf.conf_option</ml> and <ml>int Ocf.conf_option</ml>.
 These functions are specialisations of the
-<doc href="Ocf#VALoption">Ocf.option</doc> function. Other such
+<doc href="Ocf#VALoption"><ml>Ocf.option</ml></doc> function. Other such
 functions are provided (see <doc href="Ocf#convenient">here</doc>).
 </p>
+<p>
+Option values are modified in-place; the current value
+is retrieved using
+<doc href="refdoc/Ocf#VALget"><ml>Ocf.get</ml></doc>:
+</p>
+<oc>Ocf.get host;;</oc>
 <p>
 Now we create a group <ml>server_options</ml>. A group is a set of
 groups and options, each having a path (a list of strings) from
@@ -39,9 +46,14 @@ to the group returns a new one. Here we built a new group by
 adding our option <ml>host</ml> to the path <ml>["host"]</ml>,
 and <ml>port</ml> to the path <ml>["port"]</ml>.
 </p>
+</section>
+
+<section id="readwrite" title="Input and output">
 <p>We can already load values for our options from a JSON string
-(the library also provide functions to read from and write to
-JSON files). Let's define a JSON string and read it to get
+(the library also provide functions to
+<doc href="Ocf#VALfrom_file">read</doc> from and
+<doc href="Ocf#VALto_file">write</doc> to JSON files).
+Let's define a JSON string and read it to get
 values:
 </p>
 <oc>
@@ -62,12 +74,82 @@ when values are given.
 </p>
 <oc>
 let () = Ocf.from_string server_options
-  {| { host: "my.host.org" } |} ;;
+  {| { host: "my.host.org", dummy: 42 } |} ;;
 Ocf.get host (* changed *);;
 Ocf.get port (* unchanged *) ;;
 </oc>
-
-<p>To be continued !</p>
+<p>Note that the <ml>dummy</ml> field in the JSON object is ignored,
+as it does not correspond to a defined option.
+</p>
+<p>
+We can get a JSON representation of our group of options:
+</p>
+<oc>print_endline (Ocf.to_string server_options);;</oc>
+<p>Since JSON format does not allow comments, Ocf uses
+<ext-a href="http://fadefade.com/json-comments.html">this hack</ext-a>
+to show documentation strings in the JSON object. An option having a
+documentation string appears twice: first with the associated documentation
+string, then associated with the option value of the correct type.
+After reading the JSON object, only the second association is kept.
+</p>
+<p><doc href="Ocf#output">Output functions</doc> can be called
+with <ml>~with_doc: false</ml> to prevent the output of the documentation
+string:
+</p>
+<oc>print_endline (Ocf.to_string ~with_doc: false server_options);;</oc>
 </section>
 
+<section id="groups" title="Groups and paths">
+<p>
+Let's define two additional options, <ml>db_name</ml>, <ml>db_host</ml>
+and <ml>db_port</ml>:
+</p>
+<oc>let db_name = Ocf.string "mydb";;
+let db_host = Ocf.string "localhost";;
+let db_port = Ocf.int 3306;;
+</oc>
+<p>
+We can put all these options in a <ml>db_options</ml> group and see
+the JSON output:
+</p>
+<oc>let db_options =
+  let g = Ocf.add Ocf.group ["name"] db_name in
+  let g = Ocf.add g ["host"] db_host in
+  Ocf.add g ["port"] db_port;;
+print_endline (Ocf.to_string db_options);;
+</oc>
+<p>
+Now we can put <ml>server_options</ml> and <ml>db_options</ml> in
+a new <ml>app_options</ml> group (with
+<doc href="Ocf#VALadd_group"><ml>Ocf.add_group</ml></doc>),
+each one being assigned a path from the root of this new group:
+</p>
+<oc>let app_options =
+  let g = Ocf.add_group Ocf.group ["server"] server_options in
+  Ocf.add_group g ["database"] db_options;;
+print_endline (Ocf.to_string app_options);;
+</oc>
+<p>
+The same result could have been obtained by creating only the <ml>app_options</ml>
+group and adding all our options with full paths:
+</p>
+<oc>
+let app_options2 =
+  let g = Ocf.add Ocf.group ["server" ; "host"] host in
+  let g = Ocf.add g ["server" ; "port"] port in
+  let g = Ocf.add g ["database" ; "name"] db_name in
+  let g = Ocf.add g ["database" ; "host"] db_host in
+  Ocf.add g ["database" ; "port"] db_port;;
+print_endline (Ocf.to_string app_options2);;
+</oc>
+<p>
+Using groups allow to define options in a modular way. Modules defining a
+group of options do not need to known the full path of the options in the
+configuration file.
+</p>
+</section>
+
+
+<p>To be continued !</p>
+</prepare-toc>
 </sw-page>

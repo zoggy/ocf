@@ -87,7 +87,7 @@ type 'a wrapper = 'a Wrapper.t
 (** {2 Options and option groups} *)
 
 (** An option with a value of type ['a]. When the option is found
-  in a JSON code (see {!reading}), the value is modified in place.
+  in a JSON code (see {!input}), the value is modified in place.
   Use {!get} to retrieve the option value. *)
 type 'a conf_option
 
@@ -130,14 +130,14 @@ val triple : ?doc: string -> ?cb: ('a * 'b * 'c -> unit) ->
   'a wrapper -> 'b wrapper -> 'c wrapper ->
     'a * 'b * 'c -> ('a * 'b * 'c) conf_option
 
-(** {2:reading Reading options} *)
+(** {2:input Reading options} *)
 
 val from_json : group -> Yojson.Safe.json -> unit
 val from_string : group -> string -> unit
 val from_file : group -> string -> unit
 
 
-(** {2 Writing options}
+(** {2:output Writing options}
 
 The following functions output the current state of the group, i.e.
 the options it contains, with their current value.
