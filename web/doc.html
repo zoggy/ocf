@@ -130,8 +130,8 @@ each one being assigned a path from the root of this new group:
 print_endline (Ocf.to_string app_options);;
 </oc>
 <p>
-The same result could have been obtained by creating only the <ml>app_options</ml>
-group and adding all our options with full paths:
+The same result could have been obtained by adding all our options with full paths
+to a single group, here <ml>app_options2</ml>:
 </p>
 <oc>
 let app_options2 =
@@ -148,8 +148,132 @@ group of options do not need to known the full path of the options in the
 configuration file.
 </p>
 </section>
+<section id="wrappers" title="Wrappers">
+<p>
+A wrapper (<ml>'a Ocf.wrapper</ml>) is a pair of functions to convert
+values of type <ml>'a</ml>
+to JSON (<ml>'a -> Yojson.Safe.json</ml>) and from JSON
+(<ml>?def: 'a -> Yojson.Safe.json -> 'a</ml>). The <ml>?def</ml> parameter
+will be given the current value of the option the wrapper is associated to, if any.
+Default wrappers do not use this parameter, but it is used in
+<doc href="#records">record wrappers</doc>.
+</p>
+<p>An option is built using such a wrapper, like <ml>Ocf.Wrapper.string</ml> or
+<ml>Ocf.Wrapper.int</ml> in the example above (used by <ml>Ocf.string</ml>
+and <ml>Ocf.int</ml> convenient functions). Other wrappers and wrapper
+combinators are available in the <doc href="refdoc/Ocf.Wrapper">Wrapper module</doc>.
+</p>
+<p>
+For example, we can define a wrapper for lists of <ml>string * int</ml> pairs
+and use this wrapper to create an option:
+</p>
+<oc>
+let wrapper = Ocf.Wrapper.(list (pair string int));;
+let pairs = Ocf.option wrapper [ ("hello", 1) ; ("world", 2)];;
+</oc>
+<p>
+Let's see how this will be store in JSON (and so the expected JSON to give
+values for this option):
+</p>
+<oc>
+let () =
+  let group = Ocf.add Ocf.group ["dummy"] pairs in
+  print_endline (Ocf.to_string group);;
+</oc>
+<p>
+A wrapper can be created with function
+<doc href="refdoc/Ocf.Wrapper#VALmake"><ml>Ocf.Wrapper.make</ml></doc>
+by giving your own <ml>'a -> Yojson.Safe.json</ml> and
+<ml>?def: 'a -> Yojson.Safe.json -> 'a</ml> functions.
+</p>
+</section>
+
+<section id="records" title="Wrapping records with a ppx">
+<p>
+Since it is often useful to define record types to represent a configuration
+and to be able to load and store such a configuration from and to a file,
+one way want to create a wrapper from a record type.
+</p>
+<p>
+This can be done by creating special functions to map values of such
+record type to and from JSON and use these functions to make a wrapper but
+this is repetitive. Fortunately,
+Ocf comes with a ppx processor, in package <code>ocf.ppx</code> to automate
+the generation of wrapper from record types.
+</p>
+<p>Here is an example. Let's change our previous example to define a server
+configuration record type as:
+</p>
+<ocaml>type server = { host: string; port: int };;</ocaml>
+<p>
+To enable code generation, we add some annotations:
+</p>
+<oc>type server =
+  { host: string [@ocf Ocf.Wrapper.string, "localhost"] [@ocf.label "hostname"] ;
+    port: int [@ocf Ocf.Wrapper.int, 8080] ;
+  } [@@ocf]
+</oc>
+<p>
+To trigger the generation, the type definition must have a <ml>[@ocf]></ml>
+attribute.
+Each field must have a <ml>[@ocf ]</ml> attribute (on the type)
+with a pair of expressions. The first part of the pair is the wrapper,
+the second part is the default value for the field.
+</p>
+<p>
+Then, two values are generated: <ml>default_server</ml> is a value of
+type <ml>server</ml> with the given default value for each field.
+<ml>server_wrapper</ml> is the wrapper to load and store values of
+type <ml>server</ml> from and to JSON. When a field is not present
+in the JSON representation, the default value will be used, to
+have a value for each field.
+</p>
+<p>
+By default, a field in the JSON object has the same name as the corresponding field
+of the record type. The <ml>[@ocf.label]</ml> attribute on the field type can
+be used to specify another label to use in the JSON object, such as
+<ml>"hostname"</ml> in the example above.
+</p>
+<p>
+Let's define an option with our new wrapper and print its JSON representation:
+</p>
+<oc>
+let server = Ocf.option server_wrapper default_server ;;
+let group = Ocf.add Ocf.group ["server"] server ;;
+let () = print_endline (Ocf.to_string group);;
+</oc>
+<p>
+Here is an example of setting the value of our <ml>server</ml> option:
+</p>
+<oc>Ocf.get server ;;
+Ocf.from_string group {| { "server" : { "hostname": "my.host.com" } } |} ;;
+Ocf.get server ;;
+</oc>
+<p>
+Note that giving only some fields of the record in a JSON object will
+change only the corresponding fields of the record value (but a new record
+value will be allocated, though):
+</p>
+<oc>
+Ocf.from_string group {| {"server" : { "port": 9000 } } |};;
+Ocf.get server;;
+</oc>
+</section>
+<section id="parametrized" title="Parametrized record types">
+<p>
+One can define parametrized record types. In this case, the generated default
+value and the wrapper for this type will have parameters:
+</p>
+<oc>
+type ('a, 'b) entry = {
+  key: 'a [@ocf ] ; (* wrapper and default value will be parameters *)
+  value: 'b list [@ocf Ocf.Wrapper.list, [] ] ;
+           (* a wrapper will be expected as parameter, but default value []
+              is already provided *)
+  } [@@ocf];;
+</oc>
+</section>
 
 
-<p>To be continued !</p>
 </prepare-toc>
 </sw-page>

@@ -6,7 +6,7 @@ STOG_SERVER=./mystog-server
 DEST_DIR=/tmp
 BASE_URL_OPTION=
 PACKAGES=stog.markdown
-STOG_OPTIONS=--stog-ocaml-session "$(STOG_OCAML_SESSION)  -I ../src" -d $(DEST_DIR) $(BASE_URL_OPTION)
+STOG_OPTIONS=--stog-ocaml-session "$(STOG_OCAML_SESSION) -package yojson -I ../src -ppx ../src/ppx_ocf" -d $(DEST_DIR) $(BASE_URL_OPTION)
 
 build:
 	$(MAKE) site

@@ -68,10 +68,11 @@ some type from and to JSON.
 module Wrapper : sig
     type 'a t = {
         to_json : 'a -> Yojson.Safe.json ;
-        from_json : Yojson.Safe.json -> 'a ;
+        from_json : ?def: 'a -> Yojson.Safe.json -> 'a ;
       }
 
-    val wrapper : ('a -> Yojson.Safe.json) -> (Yojson.Safe.json -> 'a) -> 'a t
+    val make : ('a -> Yojson.Safe.json) -> 
+      (?def: 'a -> Yojson.Safe.json -> 'a) -> 'a t
     val int : int t
     val float : float t
     val string : string t

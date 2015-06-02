@@ -65,25 +65,25 @@ module Wrapper =
   struct
     type 'a t = {
         to_json : 'a -> Yojson.Safe.json ;
-        from_json : Yojson.Safe.json -> 'a ;
+        from_json : ?def: 'a -> Yojson.Safe.json -> 'a ;
       }
 
-    let wrapper to_json from_json = { to_json ; from_json }
+    let make to_json from_json = { to_json ; from_json }
 
     let int =
       let to_j n = `Int n in
-      let from_j = function
+      let from_j ?def = function
         `Int n -> n
       | (`Intlit s)
       | (`String s) as json ->
           begin try int_of_string s with _ -> invalid_value json end
       | json -> invalid_value json
       in
-      wrapper to_j from_j
+      make to_j from_j
 
     let float =
       let to_j x = `Float x in
-      let from_j = function
+      let from_j ?def = function
         `Float x -> x
       | `Int n -> float n
       | (`Intlit s)
@@ -91,61 +91,61 @@ module Wrapper =
           begin try float_of_string s with _ -> invalid_value json end
       | json -> invalid_value json
       in
-      wrapper to_j from_j
+      make to_j from_j
 
     let string_to_json x = `String x
-    let string_from_json = function
+    let string_from_json ?def = function
     | `Intlit s
     | `String s -> s
     | `Int n -> string_of_int n
     | json -> invalid_value json
 
     let string =
-      wrapper string_to_json string_from_json
+      make string_to_json string_from_json
 
     let string_ to_str from_str =
       let to_j x = string_to_json (to_str x) in
-      let from_j x = from_str (string_from_json x) in
-      wrapper to_j from_j
+      let from_j ?def x = from_str (string_from_json x) in
+      make to_j from_j
 
     let list w =
       let to_j l = `List (List.map w.to_json l) in
-      let from_j = function
+      let from_j ?def = function
       | `List l
-      | `Tuple l -> List.map w.from_json l
+      | `Tuple l -> List.map (w.from_json ?def: None) l
       | `Null -> []
       | json -> invalid_value json
       in
-      wrapper to_j from_j
+      make to_j from_j
 
     let option w =
       let to_j = function None -> `Null | Some x -> w.to_json x in
-      let from_j = function
+      let from_j ?def = function
         `Null -> None
       | x -> Some (w.from_json x)
       in
-      wrapper to_j from_j
+      make to_j from_j
 
     let pair w1 w2 =
       let to_j (v1, v2) = `Tuple [w1.to_json v1 ; w2.to_json v2] in
-      let from_j = function
+      let from_j ?def = function
         `List [v1 ; v2]
       | `Tuple [v1 ; v2] -> (w1.from_json v1, w2.from_json v2)
       | json -> invalid_value json
       in
-      wrapper to_j from_j
+      make to_j from_j
 
     let triple w1 w2 w3 =
       let to_j (v1, v2, v3) =
         `Tuple [w1.to_json v1 ; w2.to_json v2 ; w3.to_json v3]
       in
-      let from_j = function
+      let from_j ?def = function
         `List [v1 ; v2 ; v3]
       | `Tuple [v1 ; v2 ; v3] ->
           (w1.from_json v1, w2.from_json v2, w3.from_json v3)
       | json -> invalid_value json
       in
-      wrapper to_j from_j
+      make to_j from_j
   end
 
 type 'a wrapper = 'a Wrapper.t
@@ -218,7 +218,8 @@ let add group path option = add ?acc_path: None group path (Option option)
 
 let from_json_option path option json =
   try
-    option.value <- option.wrapper.Wrapper.from_json json ;
+    option.value <- option.wrapper.Wrapper.from_json
+      ~def: option.value json ;
     match option.cb with
       None -> ()
     | Some f -> f option.value
