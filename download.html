@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Ocf : Download and installation</title>
+<link href="https://zoggy.github.io/ocf//style.css" rel="stylesheet" type="text/css"/>
+<link href="/https://zoggy.github.io/ocf//news.rss" rel="alternate" title="Rss feed" type="application/rss+xml"/>
+</head>
+<body>
+<div id="page">
+<div class="navbar">
+<div class="navbar-inner">
+  <ul class="nav">
+    <li class="&lt;navbar-home/&gt;"><a href="https://zoggy.github.io/ocf/">Ocf</a></li>
+    <li class="active"><a href="https://zoggy.github.io/ocf/download.html">Download/Install</a></li>
+    <li class="&lt;navbar-doc/&gt;"><a href="https://zoggy.github.io/ocf/doc.html">Documentation</a></li>
+    <li class="&lt;navbar-blog/&gt;"><a href="https://zoggy.github.io/ocf/blog.html">Blog</a></li>
+    <li class="&lt;navbar-about/&gt;"><a href="https://zoggy.github.io/ocf/about.html">?</a></li>
+  </ul>
+</div>
+</div>
+
+<div id="header">
+<div class="page-title">Download and installation</div>
+</div>
+<div id="page-body">
+
+
+
+
+<ul class="toc"><li class="toc-section"><a href="https://zoggy.github.io/ocf/download.html#opam">Quick install with Opam</a></li><li class="toc-section"><a href="https://zoggy.github.io/ocf/download.html#deps">Dependencies</a></li><li class="toc-section"><a href="https://zoggy.github.io/ocf/download.html#download">From the sources</a><ul class="toc"><li class="toc-subsection"><a href="https://zoggy.github.io/ocf/download.html#compilation">Compilation</a></li></ul></li></ul>
+
+<div class="section"><div class="section-title" id="opam">Quick install with Opam</div>
+<p>
+The easiest way to install is to use <span class="ext-a"><a href="http://opam.ocaml.org">OPAM</a></span>.
+Install Opam, then, as a regular user, fetch and install an OCaml version and install
+Ocf.
+The whole can be done with the following opam commands:
+</p>
+<pre class="code-sh">$ opam init <span class="hl opt">--</span>comp<span class="hl opt">=</span><span class="hl num">4.02.1</span>
+$ opam update
+$ opam <span class="hl kwc">install</span> ocf</pre>
+</div>
+
+<div class="section"><div class="section-title" id="deps">Dependencies</div>
+<p>
+To build Ocf, you will need:
+</p>
+<ul>
+<li><span class="ext-a"><a href="http://caml.inria.fr/">OCaml &gt;= 4.02.1</a></span>,</li>
+<li><span class="ext-a"><a href="http://mjambon.com/yojson.html">Yojson &gt;= 1.1.8</a></span>,</li>
+<li><span class="ext-a"><a href="https://github.com/alainfrisch/ppx_tools/">ppx_tools &gt; 0.99</a></span>.</li>
+</ul>
+</div>
+
+<div class="section"><div class="section-title" id="download">From the sources</div>
+<p>Get the sources from git repository:</p>
+<pre class="code-sh">$ git clone https<span class="hl opt">://</span>github.com<span class="hl opt">/</span>zoggy<span class="hl opt">/</span>ocf.git</pre>
+
+<p>Or pick one of the releases:</p>
+<ul>
+
+
+<li><a href="ocf-0.1.0.tar.gz">0.1.0</a>
+<span class="date">[May 29, 2015]</span>
+<ul id="changes-0.1.0">
+<li>Initial release</li>
+</ul>
+</li>
+
+</ul>
+
+<div class="subsection"><div class="subsection-title" id="compilation">Compilation</div>
+<p>
+Just type
+</p>
+<pre class="code-sh">$ .<span class="hl opt">/</span>configure <span class="hl opt">&amp;&amp;</span> <span class="hl kwc">make</span> <span class="hl opt">&amp;&amp;</span> <span class="hl kwc">make install</span></pre>
+<p>
+This will install the <code>ocf</code> package with ocamlfind.
+</p>
+</div>
+</div>
+
+
+
+
+
+</div>
+</div>
+</body>
+</html>

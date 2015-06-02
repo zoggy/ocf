@@ -1,0 +1,382 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Ocf : Documentation</title>
+<link href="https://zoggy.github.io/ocf//style.css" rel="stylesheet" type="text/css"/>
+<link href="/https://zoggy.github.io/ocf//news.rss" rel="alternate" title="Rss feed" type="application/rss+xml"/>
+</head>
+<body>
+<div id="page">
+<div class="navbar">
+<div class="navbar-inner">
+  <ul class="nav">
+    <li class="&lt;navbar-home/&gt;"><a href="https://zoggy.github.io/ocf/">Ocf</a></li>
+    <li class="&lt;navbar-download/&gt;"><a href="https://zoggy.github.io/ocf/download.html">Download/Install</a></li>
+    <li class="active"><a href="https://zoggy.github.io/ocf/doc.html">Documentation</a></li>
+    <li class="&lt;navbar-blog/&gt;"><a href="https://zoggy.github.io/ocf/blog.html">Blog</a></li>
+    <li class="&lt;navbar-about/&gt;"><a href="https://zoggy.github.io/ocf/about.html">?</a></li>
+  </ul>
+</div>
+</div>
+
+<div id="header">
+<div class="page-title">Documentation</div>
+</div>
+<div id="page-body">
+
+
+
+
+
+<p>
+Read the <a href="https://zoggy.github.io/ocf/refdoc/Ocf.html">reference documentation</a>.
+</p>
+<p>
+Below is a guided tour of the library through examples.
+</p>
+
+<ul class="toc"><li class="toc-section"><a href="https://zoggy.github.io/ocf/doc.html#options">Defining options</a></li><li class="toc-section"><a href="https://zoggy.github.io/ocf/doc.html#readwrite">Input and output</a></li><li class="toc-section"><a href="https://zoggy.github.io/ocf/doc.html#groups">Groups and paths</a></li><li class="toc-section"><a href="https://zoggy.github.io/ocf/doc.html#wrappers">Wrappers</a></li><li class="toc-section"><a href="https://zoggy.github.io/ocf/doc.html#records">Wrapping records with a ppx</a></li><li class="toc-section"><a href="https://zoggy.github.io/ocf/doc.html#parametrized">Parametrized record types</a></li></ul>
+<div class="section"><div class="section-title" id="options">Defining options</div>
+<p>
+Let's create the <span class="icode"><span class="">host</span></span> and <span class="icode"><span class="">port</span></span> options
+with default values <span class="icode"><span class="hl str">&quot;localhost&quot;</span></span> and <span class="icode"><span class="hl num">80</span></span>:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">host</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">string</span><span class="hl std"> </span><span class="hl kw4">~doc</span><span class="hl std">: </span><span class="hl str">&quot;Host name&quot;</span><span class="hl std"> </span><span class="hl str">&quot;localhost&quot;</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val host : string Ocf.conf_option = &lt;abstr&gt;
+</div></div><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">port</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">int</span><span class="hl std"> </span><span class="hl kw4">~doc</span><span class="hl std">: </span><span class="hl str">&quot;Port number&quot;</span><span class="hl std"> </span><span class="hl num">80</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val port : int Ocf.conf_option = &lt;abstr&gt;
+</div></div></pre>
+
+<p>
+The <span class="icode"><span class="hl kw4">~doc</span></span> parameter is used to given some description of the
+option. It will be used later. Note that <span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">string</span></span> and
+<span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">int</span></span> return typed options, here
+with types <span class="icode"><span class="hl kwd">string</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">conf_option</span></span> and <span class="icode"><span class="hl kwd">int</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">conf_option</span></span>.
+These functions are specialisations of the
+<a href="https://zoggy.github.io/ocf/refdoc/Ocf.html#VALoption"><span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">option</span></span></a> function. Other such
+functions are provided (see <a href="https://zoggy.github.io/ocf/refdoc/Ocf.html#convenient">here</a>).
+</p>
+<p>
+Option values are modified in-place; the current value
+is retrieved using
+<a href="https://zoggy.github.io/ocf/refdoc/Ocf.html#VALget"><span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span></span></a>:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span><span class="hl std"> </span><span class="">host</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : string = &quot;localhost&quot;
+</div></div></pre>
+
+<p>
+Now we create a group <span class="icode"><span class="">server_options</span></span>. A group is a set of
+groups and options, each having a path (a list of strings) from
+the root of the group. Each part of a path will be mapped to a
+field in JSON objects.
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">server_options</span><span class="hl std"> =
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">group</span><span class="hl std"> [</span><span class="hl str">&quot;host&quot;</span><span class="hl std">] </span><span class="">host</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> [</span><span class="hl str">&quot;port&quot;</span><span class="hl std">] </span><span class="">port</span><span class="hl std"> ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val server_options : Ocf.group = &lt;abstr&gt;
+</div></div></pre>
+
+<p>Note that <span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">group</span></span> is not a function. Adding things
+to the group returns a new one. Here we built a new group by
+adding our option <span class="icode"><span class="">host</span></span> to the path <span class="icode"><span class="hl std">[</span><span class="hl str">&quot;host&quot;</span><span class="hl std">]</span></span>,
+and <span class="icode"><span class="">port</span></span> to the path <span class="icode"><span class="hl std">[</span><span class="hl str">&quot;port&quot;</span><span class="hl std">]</span></span>.
+</p>
+</div>
+
+<div class="section"><div class="section-title" id="readwrite">Input and output</div>
+<p>We can already load values for our options from a JSON string
+(the library also provide functions to
+<a href="https://zoggy.github.io/ocf/refdoc/Ocf.html#VALfrom_file">read</a> from and
+<a href="https://zoggy.github.io/ocf/refdoc/Ocf.html#VALto_file">write</a> to JSON files).
+Let's define a JSON string and read it to get
+values:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> () = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">from_string</span><span class="hl std"> </span><span class="">server_options</span><span class="hl std">
+  {| { </span><span class="">host</span><span class="hl std">: </span><span class="hl str">&quot;foo.bar.net&quot;</span><span class="hl std">, </span><span class="">port</span><span class="hl std">: </span><span class="hl num">8080</span><span class="hl std"> } |};;</span></div><div class="ocaml-toplevel"></div></pre>
+
+<p>
+Let's see the values of our options:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span><span class="hl std"> </span><span class="">host</span><span class="hl std"> ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : string = &quot;foo.bar.net&quot;
+</div></div><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span><span class="hl std"> </span><span class="">port</span><span class="hl std"> ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : int = 8080
+</div></div></pre>
+
+<p>
+We can read another JSON string. Values defined in this JSON will
+replace the previous values of our options, but of course only
+when values are given.
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> () = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">from_string</span><span class="hl std"> </span><span class="">server_options</span><span class="hl std">
+  {| { </span><span class="">host</span><span class="hl std">: </span><span class="hl str">&quot;my.host.org&quot;</span><span class="hl std">, </span><span class="">dummy</span><span class="hl std">: </span><span class="hl num">42</span><span class="hl std"> } |} ;;</span></div><div class="ocaml-toplevel"></div><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span><span class="hl std"> </span><span class="">host</span><span class="hl std"> </span><span class="hl com">(* changed *)</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : string = &quot;my.host.org&quot;
+</div></div><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span><span class="hl std"> </span><span class="">port</span><span class="hl std"> </span><span class="hl com">(* unchanged *)</span><span class="hl std"> ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : int = 8080
+</div></div></pre>
+
+<p>Note that the <span class="icode"><span class="">dummy</span></span> field in the JSON object is ignored,
+as it does not correspond to a defined option.
+</p>
+<p>
+We can get a JSON representation of our group of options:
+</p>
+
+<pre class="code-ocaml"><div># <span class="">print_endline</span><span class="hl std"> (</span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">to_string</span><span class="hl std"> </span><span class="">server_options</span><span class="hl std">);;</span></div><div class="ocaml-toplevel"><div class="stdout">{
+  &quot;port&quot;: &quot;Port number&quot;,
+  &quot;port&quot;: 8080,
+  &quot;host&quot;: &quot;Host name&quot;,
+  &quot;host&quot;: &quot;my.host.org&quot;
+}
+</div><div class="toplevel-out">- : unit = ()
+</div></div></pre>
+
+<p>Since JSON format does not allow comments, Ocf uses
+<span class="ext-a"><a href="http://fadefade.com/json-comments.html">this hack</a></span>
+to show documentation strings in the JSON object. An option having a
+documentation string appears twice: first with the associated documentation
+string, then associated with the option value of the correct type.
+After reading the JSON object, only the second association is kept.
+</p>
+<p><a href="https://zoggy.github.io/ocf/refdoc/Ocf.html#output">Output functions</a> can be called
+with <span class="icode"><span class="hl kw4">~with_doc</span><span class="hl std">: </span><span class="hl num">false</span></span> to prevent the output of the documentation
+string:
+</p>
+
+<pre class="code-ocaml"><div># <span class="">print_endline</span><span class="hl std"> (</span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">to_string</span><span class="hl std"> </span><span class="hl kw4">~with_doc</span><span class="hl std">: </span><span class="hl num">false</span><span class="hl std"> </span><span class="">server_options</span><span class="hl std">);;</span></div><div class="ocaml-toplevel"><div class="stdout">{ &quot;port&quot;: 8080, &quot;host&quot;: &quot;my.host.org&quot; }
+</div><div class="toplevel-out">- : unit = ()
+</div></div></pre>
+
+</div>
+
+<div class="section"><div class="section-title" id="groups">Groups and paths</div>
+<p>
+Let's define two additional options, <span class="icode"><span class="">db_name</span></span>, <span class="icode"><span class="">db_host</span></span>
+and <span class="icode"><span class="">db_port</span></span>:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">db_name</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">string</span><span class="hl std"> </span><span class="hl str">&quot;mydb&quot;</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val db_name : string Ocf.conf_option = &lt;abstr&gt;
+</div></div><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">db_host</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">string</span><span class="hl std"> </span><span class="hl str">&quot;localhost&quot;</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val db_host : string Ocf.conf_option = &lt;abstr&gt;
+</div></div><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">db_port</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">int</span><span class="hl std"> </span><span class="hl num">3306</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val db_port : int Ocf.conf_option = &lt;abstr&gt;
+</div></div></pre>
+
+<p>
+We can put all these options in a <span class="icode"><span class="">db_options</span></span> group and see
+the JSON output:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">db_options</span><span class="hl std"> =
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">group</span><span class="hl std"> [</span><span class="hl str">&quot;name&quot;</span><span class="hl std">] </span><span class="">db_name</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> [</span><span class="hl str">&quot;host&quot;</span><span class="hl std">] </span><span class="">db_host</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> [</span><span class="hl str">&quot;port&quot;</span><span class="hl std">] </span><span class="">db_port</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val db_options : Ocf.group = &lt;abstr&gt;
+</div></div><div># <span class="">print_endline</span><span class="hl std"> (</span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">to_string</span><span class="hl std"> </span><span class="">db_options</span><span class="hl std">);;</span></div><div class="ocaml-toplevel"><div class="stdout">{ &quot;port&quot;: 3306, &quot;name&quot;: &quot;mydb&quot;, &quot;host&quot;: &quot;localhost&quot; }
+</div><div class="toplevel-out">- : unit = ()
+</div></div></pre>
+
+<p>
+Now we can put <span class="icode"><span class="">server_options</span></span> and <span class="icode"><span class="">db_options</span></span> in
+a new <span class="icode"><span class="">app_options</span></span> group (with
+<a href="https://zoggy.github.io/ocf/refdoc/Ocf.html#VALadd_group"><span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add_group</span></span></a>),
+each one being assigned a path from the root of this new group:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">app_options</span><span class="hl std"> =
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add_group</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">group</span><span class="hl std"> [</span><span class="hl str">&quot;server&quot;</span><span class="hl std">] </span><span class="">server_options</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add_group</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> [</span><span class="hl str">&quot;database&quot;</span><span class="hl std">] </span><span class="">db_options</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val app_options : Ocf.group = &lt;abstr&gt;
+</div></div><div># <span class="">print_endline</span><span class="hl std"> (</span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">to_string</span><span class="hl std"> </span><span class="">app_options</span><span class="hl std">);;</span></div><div class="ocaml-toplevel"><div class="stdout">{
+  &quot;server&quot;: {
+    &quot;port&quot;: &quot;Port number&quot;,
+    &quot;port&quot;: 8080,
+    &quot;host&quot;: &quot;Host name&quot;,
+    &quot;host&quot;: &quot;my.host.org&quot;
+  },
+  &quot;database&quot;: { &quot;port&quot;: 3306, &quot;name&quot;: &quot;mydb&quot;, &quot;host&quot;: &quot;localhost&quot; }
+}
+</div><div class="toplevel-out">- : unit = ()
+</div></div></pre>
+
+<p>
+The same result could have been obtained by adding all our options with full paths
+to a single group, here <span class="icode"><span class="">app_options2</span></span>:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">app_options2</span><span class="hl std"> =
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">group</span><span class="hl std"> [</span><span class="hl str">&quot;server&quot;</span><span class="hl std"> ; </span><span class="hl str">&quot;host&quot;</span><span class="hl std">] </span><span class="">host</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> [</span><span class="hl str">&quot;server&quot;</span><span class="hl std"> ; </span><span class="hl str">&quot;port&quot;</span><span class="hl std">] </span><span class="">port</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> [</span><span class="hl str">&quot;database&quot;</span><span class="hl std"> ; </span><span class="hl str">&quot;name&quot;</span><span class="hl std">] </span><span class="">db_name</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> [</span><span class="hl str">&quot;database&quot;</span><span class="hl std"> ; </span><span class="hl str">&quot;host&quot;</span><span class="hl std">] </span><span class="">db_host</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="">g</span><span class="hl std"> [</span><span class="hl str">&quot;database&quot;</span><span class="hl std"> ; </span><span class="hl str">&quot;port&quot;</span><span class="hl std">] </span><span class="">db_port</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val app_options2 : Ocf.group = &lt;abstr&gt;
+</div></div><div># <span class="">print_endline</span><span class="hl std"> (</span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">to_string</span><span class="hl std"> </span><span class="">app_options2</span><span class="hl std">);;</span></div><div class="ocaml-toplevel"><div class="stdout">{
+  &quot;server&quot;: {
+    &quot;port&quot;: &quot;Port number&quot;,
+    &quot;port&quot;: 8080,
+    &quot;host&quot;: &quot;Host name&quot;,
+    &quot;host&quot;: &quot;my.host.org&quot;
+  },
+  &quot;database&quot;: { &quot;port&quot;: 3306, &quot;name&quot;: &quot;mydb&quot;, &quot;host&quot;: &quot;localhost&quot; }
+}
+</div><div class="toplevel-out">- : unit = ()
+</div></div></pre>
+
+<p>
+Using groups allow to define options in a modular way. Modules defining a
+group of options do not need to known the full path of the options in the
+configuration file.
+</p>
+</div>
+<div class="section"><div class="section-title" id="wrappers">Wrappers</div>
+<p>
+A wrapper (<span class="icode"><span class="hl std">'</span><span class="">a</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">wrapper</span></span>) is a pair of functions to convert
+values of type <span class="icode"><span class="hl std">'</span><span class="">a</span></span>
+to JSON (<span class="icode"><span class="hl std">'</span><span class="">a</span><span class="hl std"> -&gt; </span><span class="hl kwc">Yojson</span><span class="hl std">.</span><span class="hl kwc">Safe</span><span class="hl std">.</span><span class="">json</span></span>) and from JSON
+(<span class="icode"><span class="hl std">?</span><span class="">def</span><span class="hl std">: '</span><span class="">a</span><span class="hl std"> -&gt; </span><span class="hl kwc">Yojson</span><span class="hl std">.</span><span class="hl kwc">Safe</span><span class="hl std">.</span><span class="">json</span><span class="hl std"> -&gt; '</span><span class="">a</span></span>). The <span class="icode"><span class="hl std">?</span><span class="">def</span></span> parameter
+will be given the current value of the option the wrapper is associated to, if any.
+Default wrappers do not use this parameter, but it is used in
+<a href="https://zoggy.github.io/ocf/doc.html#records">record wrappers</a>.
+</p>
+<p>An option is built using such a wrapper, like <span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="hl kwd">string</span></span> or
+<span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="hl kwd">int</span></span> in the example above (used by <span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">string</span></span>
+and <span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">int</span></span> convenient functions). Other wrappers and wrapper
+combinators are available in the <a href="https://zoggy.github.io/ocf/refdoc/Ocf.Wrapper.html">Wrapper module</a>.
+</p>
+<p>
+For example, we can define a wrapper for lists of <span class="icode"><span class="hl kwd">string</span><span class="hl std"> * </span><span class="hl kwd">int</span></span> pairs
+and use this wrapper to create an option:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">wrapper</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.(</span><span class="hl kwd">list</span><span class="hl std"> (</span><span class="">pair</span><span class="hl std"> </span><span class="hl kwd">string</span><span class="hl std"> </span><span class="hl kwd">int</span><span class="hl std">));;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val wrapper : (string * int) list Ocf.Wrapper.t =
+  {Ocf.Wrapper.to_json = &lt;fun&gt;; from_json = &lt;fun&gt;}
+</div></div><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">pairs</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">option</span><span class="hl std"> </span><span class="">wrapper</span><span class="hl std"> [ (</span><span class="hl str">&quot;hello&quot;</span><span class="hl std">, </span><span class="hl num">1</span><span class="hl std">) ; (</span><span class="hl str">&quot;world&quot;</span><span class="hl std">, </span><span class="hl num">2</span><span class="hl std">)];;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val pairs : (string * int) list Ocf.conf_option = &lt;abstr&gt;
+</div></div></pre>
+
+<p>
+Let's see how this will be store in JSON (and so the expected JSON to give
+values for this option):
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> () =
+  </span><span class="hl kwa">let</span><span class="hl std"> </span><span class="">group</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">group</span><span class="hl std"> [</span><span class="hl str">&quot;dummy&quot;</span><span class="hl std">] </span><span class="">pairs</span><span class="hl std"> </span><span class="hl kwa">in</span><span class="hl std">
+  </span><span class="">print_endline</span><span class="hl std"> (</span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">to_string</span><span class="hl std"> </span><span class="">group</span><span class="hl std">);;</span></div><div class="ocaml-toplevel"><div class="stdout">{ &quot;dummy&quot;: [ (&quot;hello&quot;, 1), (&quot;world&quot;, 2) ] }
+</div></div></pre>
+
+<p>
+A wrapper can be created with function
+<a href="https://zoggy.github.io/ocf/refdoc/Ocf.Wrapper.html#VALmake"><span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="">make</span></span></a>
+by giving your own <span class="icode"><span class="hl std">'</span><span class="">a</span><span class="hl std"> -&gt; </span><span class="hl kwc">Yojson</span><span class="hl std">.</span><span class="hl kwc">Safe</span><span class="hl std">.</span><span class="">json</span></span> and
+<span class="icode"><span class="hl std">?</span><span class="">def</span><span class="hl std">: '</span><span class="">a</span><span class="hl std"> -&gt; </span><span class="hl kwc">Yojson</span><span class="hl std">.</span><span class="hl kwc">Safe</span><span class="hl std">.</span><span class="">json</span><span class="hl std"> -&gt; '</span><span class="">a</span></span> functions.
+</p>
+</div>
+
+<div class="section"><div class="section-title" id="records">Wrapping records with a ppx</div>
+<p>
+Since it is often useful to define record types to represent a configuration
+and to be able to load and store such a configuration from and to a file,
+one way want to create a wrapper from a record type.
+</p>
+<p>
+This can be done by creating special functions to map values of such
+record type to and from JSON and use these functions to make a wrapper but
+this is repetitive. Fortunately,
+Ocf comes with a ppx processor, in package <code>ocf.ppx</code> to automate
+the generation of wrapper from record types.
+</p>
+<p>Here is an example. Let's change our previous example to define a server
+configuration record type as:
+</p>
+<pre class="code-ocaml"><span class="hl kwa">type</span><span class="hl std"> </span><span class="">server</span><span class="hl std"> = { </span><span class="">host</span><span class="hl std">: </span><span class="hl kwd">string</span><span class="hl std">; </span><span class="">port</span><span class="hl std">: </span><span class="hl kwd">int</span><span class="hl std"> };;</span></pre>
+<p>
+To enable code generation, we add some annotations:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">type</span><span class="hl std"> </span><span class="">server</span><span class="hl std"> =
+  { </span><span class="">host</span><span class="hl std">: </span><span class="hl kwd">string</span><span class="hl std"> [@</span><span class="">ocf</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="hl kwd">string</span><span class="hl std">, </span><span class="hl str">&quot;localhost&quot;</span><span class="hl std">] [@</span><span class="">ocf</span><span class="hl std">.</span><span class="">label</span><span class="hl std"> </span><span class="hl str">&quot;hostname&quot;</span><span class="hl std">] ;
+    </span><span class="">port</span><span class="hl std">: </span><span class="hl kwd">int</span><span class="hl std"> [@</span><span class="">ocf</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="hl kwd">int</span><span class="hl std">, </span><span class="hl num">8080</span><span class="hl std">] ;
+  } [@@</span><span class="">ocf</span><span class="hl std">];;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">type server = { host : string; port : int; }
+val default_server : server = {host = &quot;localhost&quot;; port = 8080}
+val server_wrapper : server Ocf.Wrapper.t =
+  {Ocf.Wrapper.to_json = &lt;fun&gt;; from_json = &lt;fun&gt;}
+</div></div></pre>
+
+<p>
+To trigger the generation, the type definition must have a <span class="icode"><span class="hl std">[@</span><span class="">ocf</span><span class="hl std">]&gt;</span></span>
+attribute.
+Each field must have a <span class="icode"><span class="hl std">[@</span><span class="">ocf</span><span class="hl std"> ]</span></span> attribute (on the type)
+with a pair of expressions. The first part of the pair is the wrapper,
+the second part is the default value for the field.
+</p>
+<p>
+Then, two values are generated: <span class="icode"><span class="">default_server</span></span> is a value of
+type <span class="icode"><span class="">server</span></span> with the given default value for each field.
+<span class="icode"><span class="">server_wrapper</span></span> is the wrapper to load and store values of
+type <span class="icode"><span class="">server</span></span> from and to JSON. When a field is not present
+in the JSON representation, the default value will be used, to
+have a value for each field.
+</p>
+<p>
+By default, a field in the JSON object has the same name as the corresponding field
+of the record type. The <span class="icode"><span class="hl std">[@</span><span class="">ocf</span><span class="hl std">.</span><span class="">label</span><span class="hl std">]</span></span> attribute on the field type can
+be used to specify another label to use in the JSON object, such as
+<span class="icode"><span class="hl str">&quot;hostname&quot;</span></span> in the example above.
+</p>
+<p>
+Let's define an option with our new wrapper and print its JSON representation:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">server</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">option</span><span class="hl std"> </span><span class="">server_wrapper</span><span class="hl std"> </span><span class="">default_server</span><span class="hl std"> ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val server : server Ocf.conf_option = &lt;abstr&gt;
+</div></div><div># <span class="hl kwa">let</span><span class="hl std"> </span><span class="">group</span><span class="hl std"> = </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">add</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">group</span><span class="hl std"> [</span><span class="hl str">&quot;server&quot;</span><span class="hl std">] </span><span class="">server</span><span class="hl std"> ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">val group : Ocf.group = &lt;abstr&gt;
+</div></div><div># <span class="hl kwa">let</span><span class="hl std"> () = </span><span class="">print_endline</span><span class="hl std"> (</span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">to_string</span><span class="hl std"> </span><span class="">group</span><span class="hl std">);;</span></div><div class="ocaml-toplevel"><div class="stdout">{ &quot;server&quot;: { &quot;hostname&quot;: &quot;localhost&quot;, &quot;port&quot;: 8080 } }
+</div></div></pre>
+
+<p>
+Here is an example of setting the value of our <span class="icode"><span class="">server</span></span> option:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span><span class="hl std"> </span><span class="">server</span><span class="hl std"> ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : server = {host = &quot;localhost&quot;; port = 8080}
+</div></div><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">from_string</span><span class="hl std"> </span><span class="">group</span><span class="hl std"> {| { </span><span class="hl str">&quot;server&quot;</span><span class="hl std"> : { </span><span class="hl str">&quot;hostname&quot;</span><span class="hl std">: </span><span class="hl str">&quot;my.host.com&quot;</span><span class="hl std"> } } |} ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : unit = ()
+</div></div><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span><span class="hl std"> </span><span class="">server</span><span class="hl std"> ;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : server = {host = &quot;my.host.com&quot;; port = 8080}
+</div></div></pre>
+
+<p>
+Note that giving only some fields of the record in a JSON object will
+change only the corresponding fields of the record value (but a new record
+value will be allocated, though):
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">from_string</span><span class="hl std"> </span><span class="">group</span><span class="hl std"> {| {</span><span class="hl str">&quot;server&quot;</span><span class="hl std"> : { </span><span class="hl str">&quot;port&quot;</span><span class="hl std">: </span><span class="hl num">9000</span><span class="hl std"> } } |};;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : unit = ()
+</div></div><div># <span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">get</span><span class="hl std"> </span><span class="">server</span><span class="hl std">;;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">- : server = {host = &quot;my.host.com&quot;; port = 9000}
+</div></div></pre>
+
+</div>
+<div class="section"><div class="section-title" id="parametrized">Parametrized record types</div>
+<p>
+One can define parametrized record types. In this case, the generated default
+value and the wrapper for this type will have parameters:
+</p>
+
+<pre class="code-ocaml"><div># <span class="hl kwa">type</span><span class="hl std"> ('</span><span class="">a</span><span class="hl std">, '</span><span class="">b</span><span class="hl std">) </span><span class="">entry</span><span class="hl std"> = {
+  </span><span class="">key</span><span class="hl std">: '</span><span class="">a</span><span class="hl std"> ; </span><span class="hl com">(* wrapper and default value will be parameters *)</span><span class="hl std">
+  </span><span class="">value</span><span class="hl std">: '</span><span class="">b</span><span class="hl std"> </span><span class="hl kwd">list</span><span class="hl std"> [@</span><span class="">ocf</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="hl kwd">list</span><span class="hl std">, [] ] ;
+           </span><span class="hl com">(* a wrapper will be expected as parameter forr 'b, but default value []
+              is already provided *)</span><span class="hl std">
+  </span><span class="">value2</span><span class="hl std">: </span><span class="hl kwd">string</span><span class="hl std"> </span><span class="">option</span><span class="hl std"> [@</span><span class="">ocf</span><span class="hl std">.</span><span class="">wrapper</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="">option</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="hl kwd">string</span><span class="hl std">] ;
+           </span><span class="hl com">(* a wrapper is provided, but no default value *)</span><span class="hl std">
+  } [@@</span><span class="">ocf</span><span class="hl std">];;</span></div><div class="ocaml-toplevel"><div class="toplevel-out">type ('a, 'b) entry = { key : 'a; value : 'b list; value2 : string option; }
+val default_entry : key:'a -&gt; value2:string option -&gt; ('a, 'b) entry = &lt;fun&gt;
+val entry_wrapper :
+  key:'a -&gt;
+  value2:string option -&gt;
+  'a Ocf.Wrapper.t -&gt; 'b Ocf.Wrapper.t -&gt; ('a, 'b) entry Ocf.Wrapper.t =
+  &lt;fun&gt;
+</div></div></pre>
+
+</div>
+
+
+
+
+
+
+</div>
+</div>
+</body>
+</html>

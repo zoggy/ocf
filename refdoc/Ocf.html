@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Ocf : Ocf</title>
+<link href="https://zoggy.github.io/ocf//style.css" rel="stylesheet" type="text/css"/>
+<link href="/https://zoggy.github.io/ocf//news.rss" rel="alternate" title="Rss feed" type="application/rss+xml"/>
+</head>
+<body>
+<div id="page">
+<div class="navbar">
+<div class="navbar-inner">
+  <ul class="nav">
+    <li class="&lt;navbar-home/&gt;"><a href="https://zoggy.github.io/ocf/">Ocf</a></li>
+    <li class="&lt;navbar-download/&gt;"><a href="https://zoggy.github.io/ocf/download.html">Download/Install</a></li>
+    <li class="active"><a href="https://zoggy.github.io/ocf/doc.html">Documentation</a></li>
+    <li class="&lt;navbar-blog/&gt;"><a href="https://zoggy.github.io/ocf/blog.html">Blog</a></li>
+    <li class="&lt;navbar-about/&gt;"><a href="https://zoggy.github.io/ocf/about.html">?</a></li>
+  </ul>
+</div>
+</div>
+
+<div id="header">
+
+</div>
+<div id="page-body">
+
+
+<div class="ocamldoc-page">
+<div class="navbar"> <a class="up" href="index.html" title="Index">Up</a>
+ </div>
+<h1>Module <a href="type_Ocf.html">Ocf</a></h1>
+
+<pre><span class="keyword">module</span> Ocf: <code class="code">sig</code> <a href="Ocf.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Reading and writing configuration files in JSON syntax<br/>
+</div>
+<hr width="100%"/>
+
+<pre><span id="TYPEpath"><span class="keyword">type</span> path</span> = <code class="type">string list</code> </pre>
+<div class="info">
+To represent option names from root.<br/>
+</div>
+
+
+<pre><span class="keyword">module</span> <a href="Ocf.SMap.html">SMap</a>: <code class="type">Map.S</code><code class="type">  with type key = string</code></pre><br/>
+<div class="section-title" id="2_Errors">Errors</div><br/>
+
+<pre><code><span id="TYPEerror"><span class="keyword">type</span> error</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top">
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top">
+<code><span id="TYPEELTerror.Json_error"><span class="constructor">Json_error</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<td align="left" class="typefieldcomment" valign="top"><code>(*</code></td><td align="left" class="typefieldcomment" valign="top"><div class="info">
+JSON could not be read or written<br/>
+</div>
+</td><td align="left" class="typefieldcomment" valign="bottom"><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top">
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top">
+<code><span id="TYPEELTerror.Invalid_value"><span class="constructor">Invalid_value</span></span> <span class="keyword">of</span> <code class="type">Yojson.Safe.json</code></code></td>
+<td align="left" class="typefieldcomment" valign="top"><code>(*</code></td><td align="left" class="typefieldcomment" valign="top"><div class="info">
+Unexpected JSON value<br/>
+</div>
+</td><td align="left" class="typefieldcomment" valign="bottom"><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top">
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top">
+<code><span id="TYPEELTerror.Invalid_path"><span class="constructor">Invalid_path</span></span> <span class="keyword">of</span> <code class="type"><a href="Ocf.html#TYPEpath">path</a></code></code></td>
+<td align="left" class="typefieldcomment" valign="top"><code>(*</code></td><td align="left" class="typefieldcomment" valign="top"><div class="info">
+Invalid path used (empty list)<br/>
+</div>
+</td><td align="left" class="typefieldcomment" valign="bottom"><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top">
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top">
+<code><span id="TYPEELTerror.Path_conflict"><span class="constructor">Path_conflict</span></span> <span class="keyword">of</span> <code class="type"><a href="Ocf.html#TYPEpath">path</a></code></code></td>
+<td align="left" class="typefieldcomment" valign="top"><code>(*</code></td><td align="left" class="typefieldcomment" valign="top"><div class="info">
+When adding an option, an option path
+                            cannot be the prefix of another one.<br/>
+</div>
+</td><td align="left" class="typefieldcomment" valign="bottom"><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top">
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top">
+<code><span id="TYPEELTerror.Error_at_path"><span class="constructor">Error_at_path</span></span> <span class="keyword">of</span> <code class="type"><a href="Ocf.html#TYPEpath">path</a> * <a href="Ocf.html#TYPEerror">error</a></code></code></td>
+<td align="left" class="typefieldcomment" valign="top"><code>(*</code></td><td align="left" class="typefieldcomment" valign="top"><div class="info">
+Error while reading the option at the given path.<br/>
+</div>
+</td><td align="left" class="typefieldcomment" valign="bottom"><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top">
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top">
+<code><span id="TYPEELTerror.Exn_at_path"><span class="constructor">Exn_at_path</span></span> <span class="keyword">of</span> <code class="type"><a href="Ocf.html#TYPEpath">path</a> * exn</code></code></td>
+<td align="left" class="typefieldcomment" valign="top"><code>(*</code></td><td align="left" class="typefieldcomment" valign="top"><div class="info">
+Exception raised while reading the option at the given path<br/>
+</div>
+</td><td align="left" class="typefieldcomment" valign="bottom"><code>*)</code></td>
+</tr></table>
+
+
+
+<pre><span id="EXCEPTIONError"><span class="keyword">exception</span> Error</span> <span class="keyword">of</span> <code class="type"><a href="Ocf.html#TYPEerror">error</a></code></pre>
+
+<pre><span id="VALstring_of_error"><span class="keyword">val</span> string_of_error</span> : <code class="type"><a href="Ocf.html#TYPEerror">error</a> -&gt; string</code></pre><br/>
+<div class="subsection-title" id="3_ConvenientfunctionstoraiseError">Convenient functions to raise <code class="code">Error</code></div><br/>
+
+<pre><span id="VALjson_error"><span class="keyword">val</span> json_error</span> : <code class="type">string -&gt; 'a</code></pre>
+<pre><span id="VALinvalid_value"><span class="keyword">val</span> invalid_value</span> : <code class="type">Yojson.Safe.json -&gt; 'a</code></pre>
+<pre><span id="VALinvalid_path"><span class="keyword">val</span> invalid_path</span> : <code class="type"><a href="Ocf.html#TYPEpath">path</a> -&gt; 'a</code></pre>
+<pre><span id="VALpath_conflict"><span class="keyword">val</span> path_conflict</span> : <code class="type"><a href="Ocf.html#TYPEpath">path</a> -&gt; 'a</code></pre>
+<pre><span id="VALerror_at_path"><span class="keyword">val</span> error_at_path</span> : <code class="type"><a href="Ocf.html#TYPEpath">path</a> -&gt; <a href="Ocf.html#TYPEerror">error</a> -&gt; 'a</code></pre>
+<pre><span id="VALexn_at_path"><span class="keyword">val</span> exn_at_path</span> : <code class="type"><a href="Ocf.html#TYPEpath">path</a> -&gt; exn -&gt; 'a</code></pre><br/>
+<div class="section-title" id="2_Wrappers">Wrappers</div>
+<div class="vertical-space"> </div>
+
+A wrapper is a pair of functions to read and write values of
+some type from and to JSON.<br/>
+
+<pre><span class="keyword">module</span> <a href="Ocf.Wrapper.html">Wrapper</a>: <code class="code">sig</code> <a href="Ocf.Wrapper.html">..</a> <code class="code">end</code></pre>
+<pre><span id="TYPEwrapper"><span class="keyword">type</span> <code class="type">'a</code> wrapper</span> = <code class="type">'a <a href="Ocf.Wrapper.html#TYPEt">Wrapper.t</a></code> </pre>
+
+<br/>
+<div class="section-title" id="2_Optionsandoptiongroups">Options and option groups</div><br/>
+
+<pre><span id="TYPEconf_option"><span class="keyword">type</span> <code class="type">'a</code> conf_option</span> </pre>
+<div class="info">
+An option with a value of type <code class="code">'a</code>. When the option is found
+  in a JSON code (see <a href="Ocf.html#input"><i>Reading options</i></a>), the value is modified in place.
+  Use <a href="Ocf.html#VALget"><code class="code">Ocf.get</code></a> to retrieve the option value.<br/>
+</div>
+
+
+<pre><span id="VALoption"><span class="keyword">val</span> option</span> : <code class="type">?doc:string -&gt; ?cb:('a -&gt; unit) -&gt; 'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a -&gt; 'a <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre><div class="info">
+<code class="code">option wrapper v</code> creates an option with initial value <code class="code">v</code>
+  and using the given <code class="code">wrapper</code> to read and write from and to JSON.<br/>
+</div>
+<div class="param_info"><code class="code">doc</code> : an optional description for the option.</div>
+<div class="param_info"><code class="code">cb</code> : an optional function to call each time the option is read.</div>
+
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; 'a</code></pre><div class="info">
+<code class="code">get option</code> returns the value of the given option.<br/>
+</div>
+
+<pre><span id="TYPEgroup"><span class="keyword">type</span> group</span> </pre>
+<div class="info">
+A group is used to group options and other groups.<br/>
+</div>
+
+
+<pre><span id="VALgroup"><span class="keyword">val</span> group</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info">
+Create a new empty group.<br/>
+</div>
+
+<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; <a href="Ocf.html#TYPEpath">path</a> -&gt; 'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; <a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info">
+<code class="code">add group path option</code> adds the given <code class="code">option</code> to
+  <code class="code">group</code> at <code class="code">path</code>.<br/>
+</div>
+
+<pre><span id="VALadd_group"><span class="keyword">val</span> add_group</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; <a href="Ocf.html#TYPEpath">path</a> -&gt; <a href="Ocf.html#TYPEgroup">group</a> -&gt; <a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info">
+<code class="code">add_group group path g</code> adds the group <code class="code">g</code> to <code class="code">group</code> at <code class="code">path</code>.<br/>
+</div>
+<br/>
+<div class="subsection-title" id="convenient">Convenient functions to create options</div><br/>
+
+<pre><span id="VALint"><span class="keyword">val</span> int</span> : <code class="type">?doc:string -&gt; ?cb:(int -&gt; unit) -&gt; int -&gt; int <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
+<pre><span id="VALfloat"><span class="keyword">val</span> float</span> : <code class="type">?doc:string -&gt; ?cb:(float -&gt; unit) -&gt; float -&gt; float <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
+<pre><span id="VALstring"><span class="keyword">val</span> string</span> : <code class="type">?doc:string -&gt; ?cb:(string -&gt; unit) -&gt; string -&gt; string <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
+<pre><span id="VALlist"><span class="keyword">val</span> list</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a list -&gt; unit) -&gt; 'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a list -&gt; 'a list <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
+<pre><span id="VALoption_"><span class="keyword">val</span> option_</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a option -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a option -&gt; 'a option <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
+<pre><span id="VALpair"><span class="keyword">val</span> pair</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a * 'b -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'b <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a * 'b -&gt; ('a * 'b) <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
+<pre><span id="VALtriple"><span class="keyword">val</span> triple</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a * 'b * 'c -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt;<br/>       'b <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt;<br/>       'c <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a * 'b * 'c -&gt; ('a * 'b * 'c) <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre><br/>
+<div class="section-title" id="input">Reading options</div><br/>
+
+<pre><span id="VALfrom_json"><span class="keyword">val</span> from_json</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; Yojson.Safe.json -&gt; unit</code></pre>
+<pre><span id="VALfrom_string"><span class="keyword">val</span> from_string</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre>
+<pre><span id="VALfrom_file"><span class="keyword">val</span> from_file</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre><br/>
+<div class="section-title" id="output">Writing options</div>
+<div class="vertical-space"> </div>
+
+The following functions output the current state of the group, i.e.
+the options it contains, with their current value.
+<div class="vertical-space"> </div>
+
+The <code class="code">with_doc</code> parameter indicates whether to output doc associated
+to options. Default is <code class="code">true</code>.<br/>
+
+<pre><span id="VALto_json"><span class="keyword">val</span> to_json</span> : <code class="type">?with_doc:bool -&gt; <a href="Ocf.html#TYPEgroup">group</a> -&gt; Yojson.Safe.json</code></pre>
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?with_doc:bool -&gt; <a href="Ocf.html#TYPEgroup">group</a> -&gt; string</code></pre>
+<pre><span id="VALto_file"><span class="keyword">val</span> to_file</span> : <code class="type">?with_doc:bool -&gt; <a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre><br/>
+<div class="section-title" id="2_Buildingcommandlinearguments">Building command line arguments</div><br/>
+
+<pre><span id="VALto_arg"><span class="keyword">val</span> to_arg</span> : <code class="type">'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; ?doc:Arg.doc -&gt; Arg.key -&gt; Arg.key * Arg.spec * Arg.doc</code></pre><div class="info">
+<code class="code">to_arg option key</code> build a command line option description
+  to use with the <code class="code">Arg</code> module. If <code class="code">doc</code> is not provided, then
+  the description string of the option is used, if there is one;
+  else the doc string is empty (preventing the option to appear
+  in the list of options, see <code class="code">Arg</code> module documentation).
+  <code class="code">key</code> is the option name, like <code class="code">&quot;-n&quot;</code>.<br/>
+</div>
+</div>
+
+
+</div>
+</div>
+</body>
+</html>

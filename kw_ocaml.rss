@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<rss version="2.0">
+       <channel>
+         <title>Ocf : ocaml</title>
+         <link>https://zoggy.github.io/ocf/</link>
+         <description></description>
+         <managingEditor>you 'AT' yoursite 'DOT' net</managingEditor>
+         <pubDate>29 May 2015 12:34:00 +0000</pubDate><lastBuildDate>02 Jun 2015 13:56:11 +0000</lastBuildDate>
+         <generator>Stog</generator>
+         <div class="img"><img class="img" src="" width=""/><div class="legend"><url>https://zoggy.github.io/ocf//logo.png</url>
+           <title>Ocf</title><link>https://zoggy.github.io/ocf/</link>
+         </div></div>
+         <item>
+      <title>First post on new website !</title>
+      <link>https://zoggy.github.io/ocf/posts/first-post.html</link>
+      <description>
+
+</description>
+      <pubDate>01 Jul 2015 00:00:00 +0000</pubDate>
+      <guid isPermaLink="true">https://zoggy.github.io/ocf/posts/first-post.html</guid>
+    </item>
+       </channel>
+     </rss>

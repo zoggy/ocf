@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Ocf : Ocf.Wrapper</title>
+<link href="https://zoggy.github.io/ocf//style.css" rel="stylesheet" type="text/css"/>
+<link href="/https://zoggy.github.io/ocf//news.rss" rel="alternate" title="Rss feed" type="application/rss+xml"/>
+</head>
+<body>
+<div id="page">
+<div class="navbar">
+<div class="navbar-inner">
+  <ul class="nav">
+    <li class="&lt;navbar-home/&gt;"><a href="https://zoggy.github.io/ocf/">Ocf</a></li>
+    <li class="&lt;navbar-download/&gt;"><a href="https://zoggy.github.io/ocf/download.html">Download/Install</a></li>
+    <li class="active"><a href="https://zoggy.github.io/ocf/doc.html">Documentation</a></li>
+    <li class="&lt;navbar-blog/&gt;"><a href="https://zoggy.github.io/ocf/blog.html">Blog</a></li>
+    <li class="&lt;navbar-about/&gt;"><a href="https://zoggy.github.io/ocf/about.html">?</a></li>
+  </ul>
+</div>
+</div>
+
+<div id="header">
+
+</div>
+<div id="page-body">
+
+
+<div class="ocamldoc-page">
+<div class="navbar"><a class="pre" href="Ocf.SMap.html" title="Ocf.SMap">Previous</a>
+ <a class="up" href="Ocf.html" title="Ocf">Up</a>
+ </div>
+<h1>Module <a href="type_Ocf.Wrapper.html">Ocf.Wrapper</a></h1>
+
+<pre><span class="keyword">module</span> Wrapper: <code class="code">sig</code> <a href="Ocf.Wrapper.html">..</a> <code class="code">end</code></pre><hr width="100%"/>
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top">
+<code>  </code></td>
+<td align="left" valign="top">
+<code><span id="TYPEELTt.to_json">to_json</span> : <code class="type">'a -&gt; Yojson.Safe.json</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top">
+<code>  </code></td>
+<td align="left" valign="top">
+<code><span id="TYPEELTt.from_json">from_json</span> : <code class="type">?def:'a -&gt; Yojson.Safe.json -&gt; 'a</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">('a -&gt; Yojson.Safe.json) -&gt;<br/>       (?def:'a -&gt; Yojson.Safe.json -&gt; 'a) -&gt; 'a <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre>
+<pre><span id="VALint"><span class="keyword">val</span> int</span> : <code class="type">int <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfloat"><span class="keyword">val</span> float</span> : <code class="type">float <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre>
+<pre><span id="VALstring"><span class="keyword">val</span> string</span> : <code class="type">string <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre>
+<pre><span id="VALstring_"><span class="keyword">val</span> string_</span> : <code class="type">('a -&gt; string) -&gt; (string -&gt; 'a) -&gt; 'a <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre>
+<pre><span id="VALlist"><span class="keyword">val</span> list</span> : <code class="type">'a <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt; 'a list <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre>
+<pre><span id="VALoption"><span class="keyword">val</span> option</span> : <code class="type">'a <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt; 'a option <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre>
+<pre><span id="VALpair"><span class="keyword">val</span> pair</span> : <code class="type">'a <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt; 'b <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt; ('a * 'b) <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre>
+<pre><span id="VALtriple"><span class="keyword">val</span> triple</span> : <code class="type">'a <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt;<br/>       'b <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt; 'c <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt; ('a * 'b * 'c) <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre></div>
+
+
+</div>
+</div>
+</body>
+</html>

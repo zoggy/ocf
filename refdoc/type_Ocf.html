@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Ocf : Ocf</title>
+<link href="https://zoggy.github.io/ocf//style.css" rel="stylesheet" type="text/css"/>
+<link href="/https://zoggy.github.io/ocf//news.rss" rel="alternate" title="Rss feed" type="application/rss+xml"/>
+</head>
+<body>
+<div id="page">
+<div class="navbar">
+<div class="navbar-inner">
+  <ul class="nav">
+    <li class="&lt;navbar-home/&gt;"><a href="https://zoggy.github.io/ocf/">Ocf</a></li>
+    <li class="&lt;navbar-download/&gt;"><a href="https://zoggy.github.io/ocf/download.html">Download/Install</a></li>
+    <li class="active"><a href="https://zoggy.github.io/ocf/doc.html">Documentation</a></li>
+    <li class="&lt;navbar-blog/&gt;"><a href="https://zoggy.github.io/ocf/blog.html">Blog</a></li>
+    <li class="&lt;navbar-about/&gt;"><a href="https://zoggy.github.io/ocf/about.html">?</a></li>
+  </ul>
+</div>
+</div>
+
+<div id="header">
+
+</div>
+<div id="page-body">
+
+
+<div class="ocamldoc-page">
+<code class="code"><span class="keyword">sig</span><br/>
+  <span class="keyword">type</span> path = string list<br/>
+  <span class="keyword">module</span> <span class="constructor">SMap</span> :<br/>
+    <span class="keyword">sig</span><br/>
+      <span class="keyword">type</span> key = string<br/>
+      <span class="keyword">type</span> +<span class="keywordsign">'</span>a t<br/>
+      <span class="keyword">val</span> empty : <span class="keywordsign">'</span>a t<br/>
+      <span class="keyword">val</span> is_empty : <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> bool<br/>
+      <span class="keyword">val</span> mem : key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> bool<br/>
+      <span class="keyword">val</span> add : key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t<br/>
+      <span class="keyword">val</span> singleton : key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t<br/>
+      <span class="keyword">val</span> remove : key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t<br/>
+      <span class="keyword">val</span> merge :<br/>
+        (key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a option <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b option <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>c option) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>c t<br/>
+      <span class="keyword">val</span> compare : (<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> int) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> int<br/>
+      <span class="keyword">val</span> equal : (<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> bool) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> bool<br/>
+      <span class="keyword">val</span> iter : (key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> unit<br/>
+      <span class="keyword">val</span> fold : (key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b<br/>
+      <span class="keyword">val</span> for_all : (key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> bool) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> bool<br/>
+      <span class="keyword">val</span> exists : (key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> bool) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> bool<br/>
+      <span class="keyword">val</span> filter : (key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> bool) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t<br/>
+      <span class="keyword">val</span> partition : (key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> bool) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t * <span class="keywordsign">'</span>a t<br/>
+      <span class="keyword">val</span> cardinal : <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> int<br/>
+      <span class="keyword">val</span> bindings : <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> (key * <span class="keywordsign">'</span>a) list<br/>
+      <span class="keyword">val</span> min_binding : <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> key * <span class="keywordsign">'</span>a<br/>
+      <span class="keyword">val</span> max_binding : <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> key * <span class="keywordsign">'</span>a<br/>
+      <span class="keyword">val</span> choose : <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> key * <span class="keywordsign">'</span>a<br/>
+      <span class="keyword">val</span> split : key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t * <span class="keywordsign">'</span>a option * <span class="keywordsign">'</span>a t<br/>
+      <span class="keyword">val</span> find : key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
+      <span class="keyword">val</span> map : (<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b t<br/>
+      <span class="keyword">val</span> mapi : (key <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b t<br/>
+    <span class="keyword">end</span><br/>
+  <span class="keyword">type</span> error =<br/>
+      <span class="constructor">Json_error</span> <span class="keyword">of</span> string<br/>
+    <span class="keywordsign">|</span> <span class="constructor">Invalid_value</span> <span class="keyword">of</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json<br/>
+    <span class="keywordsign">|</span> <span class="constructor">Invalid_path</span> <span class="keyword">of</span> <span class="constructor">Ocf</span>.path<br/>
+    <span class="keywordsign">|</span> <span class="constructor">Path_conflict</span> <span class="keyword">of</span> <span class="constructor">Ocf</span>.path<br/>
+    <span class="keywordsign">|</span> <span class="constructor">Error_at_path</span> <span class="keyword">of</span> <span class="constructor">Ocf</span>.path * <span class="constructor">Ocf</span>.error<br/>
+    <span class="keywordsign">|</span> <span class="constructor">Exn_at_path</span> <span class="keyword">of</span> <span class="constructor">Ocf</span>.path * exn<br/>
+  <span class="keyword">exception</span> <span class="constructor">Error</span> <span class="keyword">of</span> <span class="constructor">Ocf</span>.error<br/>
+  <span class="keyword">val</span> string_of_error : <span class="constructor">Ocf</span>.error <span class="keywordsign">-&gt;</span> string<br/>
+  <span class="keyword">val</span> json_error : string <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
+  <span class="keyword">val</span> invalid_value : <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
+  <span class="keyword">val</span> invalid_path : <span class="constructor">Ocf</span>.path <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
+  <span class="keyword">val</span> path_conflict : <span class="constructor">Ocf</span>.path <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
+  <span class="keyword">val</span> error_at_path : <span class="constructor">Ocf</span>.path <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.error <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
+  <span class="keyword">val</span> exn_at_path : <span class="constructor">Ocf</span>.path <span class="keywordsign">-&gt;</span> exn <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
+  <span class="keyword">module</span> <span class="constructor">Wrapper</span> :<br/>
+    <span class="keyword">sig</span><br/>
+      <span class="keyword">type</span> <span class="keywordsign">'</span>a t = {<br/>
+        to_json : <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json;<br/>
+        from_json : ?def:<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a;<br/>
+      }<br/>
+      <span class="keyword">val</span> make :<br/>
+        (<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json) <span class="keywordsign">-&gt;</span><br/>
+        (?def:<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+      <span class="keyword">val</span> int : int <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+      <span class="keyword">val</span> float : float <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+      <span class="keyword">val</span> string : string <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+      <span class="keyword">val</span> string_ : (<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> string) <span class="keywordsign">-&gt;</span> (string <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+      <span class="keyword">val</span> list : <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a list <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+      <span class="keyword">val</span> option : <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a option <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+      <span class="keyword">val</span> pair :<br/>
+        <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> (<span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b) <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+      <span class="keyword">val</span> triple :<br/>
+        <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span><br/>
+        <span class="keywordsign">'</span>b <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>c <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> (<span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b * <span class="keywordsign">'</span>c) <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+    <span class="keyword">end</span><br/>
+  <span class="keyword">type</span> <span class="keywordsign">'</span>a wrapper = <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+  <span class="keyword">type</span> <span class="keywordsign">'</span>a conf_option<br/>
+  <span class="keyword">val</span> option :<br/>
+    ?doc:string <span class="keywordsign">-&gt;</span><br/>
+    ?cb:(<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.wrapper <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.conf_option<br/>
+  <span class="keyword">val</span> get : <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.conf_option <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
+  <span class="keyword">type</span> group<br/>
+  <span class="keyword">val</span> group : <span class="constructor">Ocf</span>.group<br/>
+  <span class="keyword">val</span> add : <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.path <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.conf_option <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.group<br/>
+  <span class="keyword">val</span> add_group : <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.path <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.group<br/>
+  <span class="keyword">val</span> int : ?doc:string <span class="keywordsign">-&gt;</span> ?cb:(int <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span> int <span class="keywordsign">-&gt;</span> int <span class="constructor">Ocf</span>.conf_option<br/>
+  <span class="keyword">val</span> float :<br/>
+    ?doc:string <span class="keywordsign">-&gt;</span> ?cb:(float <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span> float <span class="keywordsign">-&gt;</span> float <span class="constructor">Ocf</span>.conf_option<br/>
+  <span class="keyword">val</span> string :<br/>
+    ?doc:string <span class="keywordsign">-&gt;</span> ?cb:(string <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span> string <span class="keywordsign">-&gt;</span> string <span class="constructor">Ocf</span>.conf_option<br/>
+  <span class="keyword">val</span> list :<br/>
+    ?doc:string <span class="keywordsign">-&gt;</span><br/>
+    ?cb:(<span class="keywordsign">'</span>a list <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span><br/>
+    <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.wrapper <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a list <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a list <span class="constructor">Ocf</span>.conf_option<br/>
+  <span class="keyword">val</span> option_ :<br/>
+    ?doc:string <span class="keywordsign">-&gt;</span><br/>
+    ?cb:(<span class="keywordsign">'</span>a option <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span><br/>
+    <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.wrapper <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a option <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a option <span class="constructor">Ocf</span>.conf_option<br/>
+  <span class="keyword">val</span> pair :<br/>
+    ?doc:string <span class="keywordsign">-&gt;</span><br/>
+    ?cb:(<span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span><br/>
+    <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.wrapper <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>b <span class="constructor">Ocf</span>.wrapper <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b <span class="keywordsign">-&gt;</span> (<span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b) <span class="constructor">Ocf</span>.conf_option<br/>
+  <span class="keyword">val</span> triple :<br/>
+    ?doc:string <span class="keywordsign">-&gt;</span><br/>
+    ?cb:(<span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b * <span class="keywordsign">'</span>c <span class="keywordsign">-&gt;</span> unit) <span class="keywordsign">-&gt;</span><br/>
+    <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.wrapper <span class="keywordsign">-&gt;</span><br/>
+    <span class="keywordsign">'</span>b <span class="constructor">Ocf</span>.wrapper <span class="keywordsign">-&gt;</span><br/>
+    <span class="keywordsign">'</span>c <span class="constructor">Ocf</span>.wrapper <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b * <span class="keywordsign">'</span>c <span class="keywordsign">-&gt;</span> (<span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b * <span class="keywordsign">'</span>c) <span class="constructor">Ocf</span>.conf_option<br/>
+  <span class="keyword">val</span> from_json : <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json <span class="keywordsign">-&gt;</span> unit<br/>
+  <span class="keyword">val</span> from_string : <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> string <span class="keywordsign">-&gt;</span> unit<br/>
+  <span class="keyword">val</span> from_file : <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> string <span class="keywordsign">-&gt;</span> unit<br/>
+  <span class="keyword">val</span> to_json : ?with_doc:bool <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json<br/>
+  <span class="keyword">val</span> to_string : ?with_doc:bool <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> string<br/>
+  <span class="keyword">val</span> to_file : ?with_doc:bool <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.group <span class="keywordsign">-&gt;</span> string <span class="keywordsign">-&gt;</span> unit<br/>
+  <span class="keyword">val</span> to_arg :<br/>
+    <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.conf_option <span class="keywordsign">-&gt;</span><br/>
+    ?doc:<span class="constructor">Arg</span>.doc <span class="keywordsign">-&gt;</span> <span class="constructor">Arg</span>.key <span class="keywordsign">-&gt;</span> <span class="constructor">Arg</span>.key * <span class="constructor">Arg</span>.spec * <span class="constructor">Arg</span>.doc<br/>
+<span class="keyword">end</span></code></div>
+
+
+</div>
+</div>
+</body>
+</html>
