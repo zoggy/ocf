@@ -19,7 +19,7 @@ let host = Ocf.string ~doc: "Host name" "localhost";;
 let port = Ocf.int ~doc: "Port number" 80;;
 </oc>
 <p>
-The <ml>~doc</ml> parameter is used to given some description of the
+The <ml>~doc</ml> parameter is used to give some description of the
 option. It will be used later. Note that <ml>Ocf.string</ml> and
 <ml>Ocf.int</ml> return typed options, here
 with types <ml>string Ocf.conf_option</ml> and <ml>int Ocf.conf_option</ml>.
@@ -103,7 +103,7 @@ string:
 
 <section id="groups" title="Groups and paths">
 <p>
-Let's define two additional options, <ml>db_name</ml>, <ml>db_host</ml>
+Let's define three additional options, <ml>db_name</ml>, <ml>db_host</ml>
 and <ml>db_port</ml>:
 </p>
 <oc>let db_name = Ocf.string "mydb";;
@@ -145,7 +145,7 @@ let app_options2 =
 print_endline (Ocf.to_string app_options2);;
 </oc>
 <p>
-Using groups allow to define options in a modular way. Modules defining a
+Using groups allows to define options in a modular way. Modules defining a
 group of options do not need to known the full path of the options in the
 configuration file.
 </p>
@@ -174,7 +174,7 @@ let wrapper = Ocf.Wrapper.(list (pair string int));;
 let pairs = Ocf.option wrapper [ ("hello", 1) ; ("world", 2)];;
 </oc>
 <p>
-Let's see how this will be store in JSON (and so the expected JSON to give
+Let's see how this will be stored in JSON (and so the expected JSON to give
 values for this option):
 </p>
 <oc>
@@ -201,7 +201,7 @@ This can be done by creating special functions to map values of such
 record type to and from JSON and use these functions to make a wrapper but
 this is repetitive. Fortunately,
 Ocf comes with a ppx processor, in package <code>ocf.ppx</code> to automate
-the generation of wrapper from record types.
+the generation of wrappers from record types.
 </p>
 <p>Here is an example. Let's change our previous example to define a server
 configuration record type as:
@@ -216,9 +216,9 @@ To enable code generation, we add some annotations:
   } [@@ocf]
 </oc>
 <p>
-To trigger the generation, the type definition must have a <ml>[@ocf]></ml>
+To trigger the generation, the type definition must have a <ml>[@@ocf]></ml>
 attribute.
-Each field must have a <ml>[@ocf ]</ml> attribute (on the type)
+Each field can have a <ml>[@ocf ]</ml> attribute (on the type)
 with a pair of expressions. The first part of the pair is the wrapper,
 the second part is the default value for the field.
 </p>
