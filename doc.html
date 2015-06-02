@@ -48,7 +48,7 @@ with default values <span class="icode"><span class="hl str">&quot;localhost&quo
 </div></div></pre>
 
 <p>
-The <span class="icode"><span class="hl kw4">~doc</span></span> parameter is used to given some description of the
+The <span class="icode"><span class="hl kw4">~doc</span></span> parameter is used to give some description of the
 option. It will be used later. Note that <span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">string</span></span> and
 <span class="icode"><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwd">int</span></span> return typed options, here
 with types <span class="icode"><span class="hl kwd">string</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">conf_option</span></span> and <span class="icode"><span class="hl kwd">int</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="">conf_option</span></span>.
@@ -151,7 +151,7 @@ string:
 
 <div class="section"><div class="section-title" id="groups">Groups and paths</div>
 <p>
-Let's define two additional options, <span class="icode"><span class="">db_name</span></span>, <span class="icode"><span class="">db_host</span></span>
+Let's define three additional options, <span class="icode"><span class="">db_name</span></span>, <span class="icode"><span class="">db_host</span></span>
 and <span class="icode"><span class="">db_port</span></span>:
 </p>
 
@@ -219,7 +219,7 @@ to a single group, here <span class="icode"><span class="">app_options2</span></
 </div></div></pre>
 
 <p>
-Using groups allow to define options in a modular way. Modules defining a
+Using groups allows to define options in a modular way. Modules defining a
 group of options do not need to known the full path of the options in the
 configuration file.
 </p>
@@ -250,7 +250,7 @@ and use this wrapper to create an option:
 </div></div></pre>
 
 <p>
-Let's see how this will be store in JSON (and so the expected JSON to give
+Let's see how this will be stored in JSON (and so the expected JSON to give
 values for this option):
 </p>
 
@@ -278,7 +278,7 @@ This can be done by creating special functions to map values of such
 record type to and from JSON and use these functions to make a wrapper but
 this is repetitive. Fortunately,
 Ocf comes with a ppx processor, in package <code>ocf.ppx</code> to automate
-the generation of wrapper from record types.
+the generation of wrappers from record types.
 </p>
 <p>Here is an example. Let's change our previous example to define a server
 configuration record type as:
@@ -298,9 +298,9 @@ val server_wrapper : server Ocf.Wrapper.t =
 </div></div></pre>
 
 <p>
-To trigger the generation, the type definition must have a <span class="icode"><span class="hl std">[@</span><span class="">ocf</span><span class="hl std">]&gt;</span></span>
+To trigger the generation, the type definition must have a <span class="icode"><span class="hl std">[@@</span><span class="">ocf</span><span class="hl std">]&gt;</span></span>
 attribute.
-Each field must have a <span class="icode"><span class="hl std">[@</span><span class="">ocf</span><span class="hl std"> ]</span></span> attribute (on the type)
+Each field can have a <span class="icode"><span class="hl std">[@</span><span class="">ocf</span><span class="hl std"> ]</span></span> attribute (on the type)
 with a pair of expressions. The first part of the pair is the wrapper,
 the second part is the default value for the field.
 </p>
