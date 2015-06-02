@@ -4,7 +4,9 @@
 <p>
 Read the <doc href="/refdoc/Ocf.html">reference documentation</doc>.
 </p>
-
+<p>
+Below is a guided tour of the library through examples.
+</p>
 <prepare-toc>
 <toc/>
 <section id="options" title="Defining options">
@@ -266,10 +268,12 @@ value and the wrapper for this type will have parameters:
 </p>
 <oc>
 type ('a, 'b) entry = {
-  key: 'a [@ocf ] ; (* wrapper and default value will be parameters *)
+  key: 'a ; (* wrapper and default value will be parameters *)
   value: 'b list [@ocf Ocf.Wrapper.list, [] ] ;
-           (* a wrapper will be expected as parameter, but default value []
+           (* a wrapper will be expected as parameter forr 'b, but default value []
               is already provided *)
+  value2: string option [@ocf.wrapper Ocf.Wrapper.option Ocf.Wrapper.string] ;
+           (* a wrapper is provided, but no default value *)
   } [@@ocf];;
 </oc>
 </section>
