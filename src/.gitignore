@@ -3,5 +3,6 @@ ocf_test
 ocf_test2
 ocamldoc
 ppx_ocf
+ppx_ocf.byte
 
 
