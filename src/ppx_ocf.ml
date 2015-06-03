@@ -331,15 +331,20 @@ let fold_structure acc item =
   match item.pstr_desc with
   | (Pstr_type l) ->
       let type_decls = List.filter
-      (fun decl -> has_ocf_attribute decl.ptype_attributes) l
+        (fun decl -> has_ocf_attribute decl.ptype_attributes) l
       in
       let bindings = List.flatten (List.map generate type_decls) in
-      let decl = {
-          pstr_desc = Pstr_value (Recursive, bindings) ;
-          pstr_loc = item.pstr_loc ;
-        }
-      in
-      decl :: item :: acc
+      begin
+        match bindings with
+          [] -> item :: acc
+        | _ ->
+            let decl = {
+                pstr_desc = Pstr_value (Recursive, bindings) ;
+                pstr_loc = item.pstr_loc ;
+              }
+            in
+            decl :: item :: acc
+      end
   | _ -> item :: acc
 
 let structure_mapper mapper structure =
