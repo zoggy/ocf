@@ -1,2 +1,3 @@
 Next release:
 - (ppx) fix: do not build empty value declarations
+- add Ocf.set

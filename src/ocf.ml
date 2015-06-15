@@ -159,6 +159,11 @@ type conf_option_ =
 type 'a conf_option = conf_option_
 
 let get o = o.value
+let set (o : 'a conf_option) (v : 'a) =
+  o.value <- Obj.magic v; 
+  match o.cb with
+  | None -> ()
+  | Some f -> f v
 
 let option : ?doc: string -> ?cb: ('a -> unit) ->
   'a wrapper -> 'a -> 'a conf_option =
@@ -218,11 +223,10 @@ let add group path option = add ?acc_path: None group path (Option option)
 
 let from_json_option path option json =
   try
-    option.value <- option.wrapper.Wrapper.from_json
-      ~def: option.value json ;
-    match option.cb with
-      None -> ()
-    | Some f -> f option.value
+    let v = option.wrapper.Wrapper.from_json
+      ~def: option.value json
+    in
+    set option v    
   with
     Error e -> error_at_path path e
   | e -> exn_at_path path e

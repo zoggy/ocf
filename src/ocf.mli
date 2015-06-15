@@ -71,7 +71,7 @@ module Wrapper : sig
         from_json : ?def: 'a -> Yojson.Safe.json -> 'a ;
       }
 
-    val make : ('a -> Yojson.Safe.json) -> 
+    val make : ('a -> Yojson.Safe.json) ->
       (?def: 'a -> Yojson.Safe.json -> 'a) -> 'a t
     val int : int t
     val float : float t
@@ -102,6 +102,10 @@ val option : ?doc: string -> ?cb: ('a -> unit) ->
 
 (** [get option] returns the value of the given option. *)
 val get : 'a conf_option -> 'a
+
+(** [set option value] sets the value of the given option
+  and calls the associated callback if any. *)
+val set : 'a conf_option -> 'a -> unit
 
 (** A group is used to group options and other groups. *)
 type group
