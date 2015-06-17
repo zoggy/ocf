@@ -125,11 +125,6 @@ docstog: dump.odoc
 dump.odoc: ocf.mli
 	$(OCAMLFIND) ocamldoc -v $(OF_FLAGS) `ls ocf.mli ` -rectypes -dump $@
 
-docstog: dump.odoc
-	$(MKDIR) ../web/refdoc
-	$(OCAMLFIND) ocamldoc 	-load dump.odoc \
-	-t Ocf -d ../web/refdoc -g odoc_stog.cmo
-
 
 ##########
 install: install-lib
