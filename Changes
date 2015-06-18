@@ -1,3 +1,4 @@
-Next release:
+Release 0.2.0:
 - (ppx) fix: do not build empty value declarations
 - add Ocf.set
+- add Ocf.Wrapper.of_ok_error
