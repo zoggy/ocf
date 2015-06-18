@@ -69,6 +69,10 @@ module Wrapper =
       }
 
     let make to_json from_json = { to_json ; from_json }
+    let of_ok_error f json =
+      match f json with
+        `Ok x -> x
+      | `Error msg -> invalid_value json
 
     let int =
       let to_j n = `Int n in
@@ -160,7 +164,7 @@ type 'a conf_option = conf_option_
 
 let get o = o.value
 let set (o : 'a conf_option) (v : 'a) =
-  o.value <- Obj.magic v; 
+  o.value <- Obj.magic v;
   match o.cb with
   | None -> ()
   | Some f -> f v
@@ -226,7 +230,7 @@ let from_json_option path option json =
     let v = option.wrapper.Wrapper.from_json
       ~def: option.value json
     in
-    set option v    
+    set option v
   with
     Error e -> error_at_path path e
   | e -> exn_at_path path e
