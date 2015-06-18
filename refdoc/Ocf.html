@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-<title>Ocf : Ocf</title>
+<title>Ocf reference documentation : Ocf</title>
 <link href="https://zoggy.github.io/ocf//style.css" rel="stylesheet" type="text/css"/>
 <link href="/https://zoggy.github.io/ocf//news.rss" rel="alternate" title="Rss feed" type="application/rss+xml"/>
 </head>
@@ -150,6 +150,11 @@ An option with a value of type <code class="code">'a</code>. When the option is 
 
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; 'a</code></pre><div class="info">
 <code class="code">get option</code> returns the value of the given option.<br/>
+</div>
+
+<pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; 'a -&gt; unit</code></pre><div class="info">
+<code class="code">set option value</code> sets the value of the given option
+  and calls the associated callback if any.<br/>
 </div>
 
 <pre><span id="TYPEgroup"><span class="keyword">type</span> group</span> </pre>
