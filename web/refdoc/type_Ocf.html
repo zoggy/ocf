@@ -1,4 +1,4 @@
-<ocamldoc with-contents="true"><title>Ocf : Ocf</title><contents><div class="ocamldoc-page">
+<ocamldoc with-contents="true"><title>Ocf reference documentation : Ocf</title><contents><div class="ocamldoc-page">
 <code class="code"><span class="keyword">sig</span><br/>
 &#160;&#160;<span class="keyword">type</span>&#160;path&#160;=&#160;string&#160;list<br/>
 &#160;&#160;<span class="keyword">module</span>&#160;<span class="constructor">SMap</span>&#160;:<br/>
@@ -55,6 +55,9 @@
 &#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">val</span>&#160;make&#160;:<br/>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(<span class="keywordsign">'</span>a&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json)&#160;<span class="keywordsign">-&gt;</span><br/>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(?def:<span class="keywordsign">'</span>a&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a)&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a&#160;<span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+&#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">val</span>&#160;of_ok_error&#160;:<br/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(<span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json&#160;<span class="keywordsign">-&gt;</span>&#160;[&#160;<span class="keywordsign">`</span><span class="constructor">Error</span>&#160;<span class="keyword">of</span>&#160;<span class="keywordsign">'</span>b&#160;<span class="keywordsign">|</span>&#160;<span class="keywordsign">`</span><span class="constructor">Ok</span>&#160;<span class="keyword">of</span>&#160;<span class="keywordsign">'</span>a&#160;])&#160;<span class="keywordsign">-&gt;</span><br/>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a<br/>
 &#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">val</span>&#160;int&#160;:&#160;int&#160;<span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
 &#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">val</span>&#160;float&#160;:&#160;float&#160;<span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
 &#160;&#160;&#160;&#160;&#160;&#160;<span class="keyword">val</span>&#160;string&#160;:&#160;string&#160;<span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
@@ -73,6 +76,7 @@
 &#160;&#160;&#160;&#160;?doc:string&#160;<span class="keywordsign">-&gt;</span><br/>
 &#160;&#160;&#160;&#160;?cb:(<span class="keywordsign">'</span>a&#160;<span class="keywordsign">-&gt;</span>&#160;unit)&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a&#160;<span class="constructor">Ocf</span>.wrapper&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a&#160;<span class="constructor">Ocf</span>.conf_option<br/>
 &#160;&#160;<span class="keyword">val</span>&#160;get&#160;:&#160;<span class="keywordsign">'</span>a&#160;<span class="constructor">Ocf</span>.conf_option&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a<br/>
+&#160;&#160;<span class="keyword">val</span>&#160;set&#160;:&#160;<span class="keywordsign">'</span>a&#160;<span class="constructor">Ocf</span>.conf_option&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a&#160;<span class="keywordsign">-&gt;</span>&#160;unit<br/>
 &#160;&#160;<span class="keyword">type</span>&#160;group<br/>
 &#160;&#160;<span class="keyword">val</span>&#160;group&#160;:&#160;<span class="constructor">Ocf</span>.group<br/>
 &#160;&#160;<span class="keyword">val</span>&#160;add&#160;:&#160;<span class="constructor">Ocf</span>.group&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="constructor">Ocf</span>.path&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="keywordsign">'</span>a&#160;<span class="constructor">Ocf</span>.conf_option&#160;<span class="keywordsign">-&gt;</span>&#160;<span class="constructor">Ocf</span>.group<br/>
