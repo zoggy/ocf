@@ -330,7 +330,7 @@ body {
     font-size: 4; }
   .ocamldoc-page .subscript {
     font-size: 4; }
-  .ocamldoc-page .comment {
+  .ocamldoc-page .comment, .ocamldoc-page .typefieldcomment, .ocamldoc-page .typefieldcomment code {
     color: Green; }
   .ocamldoc-page .constructor {
     color: Blue; }
@@ -345,6 +345,8 @@ body {
     margin-left: 3em;
     margin-right: 3em;
     margin-bottom: 1.5em; }
+  .ocamldoc-page td.typefieldcomment .info {
+    margin: 0.1em 0.1em 0.1em 0.2em; }
   .ocamldoc-page .param_info {
     margin-top: 4px;
     margin-left: 4.5em;
@@ -356,15 +358,17 @@ body {
   .ocamldoc-page .code {
     color: #465F91; }
   .ocamldoc-page .typetable {
-    border-style: hidden; }
+    border-style: hidden;
+    background-color: #eeeeee; }
   .ocamldoc-page .paramstable {
     border-style: hidden;
     padding: 5pt 5pt; }
   .ocamldoc-page tr {
     background-color: transparent; }
-  .ocamldoc-page td.typefieldcomment {
+  .ocamldoc-page td.typefieldcomment, .ocamldoc-page td.typefieldcomment code {
     background-color: transparent;
-    font-size: smaller; }
+    font-size: smaller;
+    max-width: 400px; }
   .ocamldoc-page div.sig_block {
     margin-left: 2em; }
   .ocamldoc-page *:target {
