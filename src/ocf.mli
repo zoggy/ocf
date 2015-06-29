@@ -93,6 +93,13 @@ module Wrapper : sig
     val triple : 'a t -> 'b t -> 'c t -> ('a * 'b * 'c) t
 
     type assocs = (string * Yojson.Safe.json) list
+
+    (** To create a map from strings to ['a]. This will be stored in JSON as
+      {[ { foo: ...,  bar: ..., ... } ]}
+      Here [foo] and [bar] are the keys in the resulting map.
+      The [Map.S.fold], [Map.S.add] and [Map.S.empty] functions can
+      be used for parameters [fold], [add] and [empty].
+    *)
     val string_map :
       fold: ((string -> 'a -> assocs -> assocs) -> 'map -> assocs -> assocs) ->
         add: (string -> 'a -> 'map -> 'map) ->
@@ -141,7 +148,8 @@ val add_group : [`Open] group -> path -> 'a group -> [`Open] group
 
 (** [as_group option] creates a group from [option], i.e. like
   if the given option had an empty access path. Useful for options
-  created from a record wrapper using the ppx extension. *)
+  created from a record wrapper using the ppx extension and that
+  must be read as root element of a JSON file. *)
 val as_group : 'a conf_option -> [`Closed] group
 
 (** {3:convenient Convenient functions to create options} *)
@@ -159,6 +167,8 @@ val pair : ?doc: string -> ?cb: ('a * 'b -> unit) ->
 val triple : ?doc: string -> ?cb: ('a * 'b * 'c -> unit) ->
   'a wrapper -> 'b wrapper -> 'c wrapper ->
     'a * 'b * 'c -> ('a * 'b * 'c) conf_option
+
+ (** See {!Wrapper.string_map} for parameters. *)
 val string_map :
   ?doc: string -> ?cb: ('map -> unit) ->
     fold: ((string -> 'a -> Wrapper.assocs -> Wrapper.assocs) -> 'map -> Wrapper.assocs -> Wrapper.assocs) ->

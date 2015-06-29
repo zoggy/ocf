@@ -47,4 +47,11 @@
 <pre><span id="TYPEassocs"><span class="keyword">type</span> assocs</span> = <code class="type">(string * Yojson.Safe.json) list</code> </pre>
 
 
-<pre><span id="VALstring_map"><span class="keyword">val</span> string_map</span> : <code class="type">fold:((string -&gt; 'a -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">assocs</a> -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">assocs</a>) -&gt;<br/>             'map -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">assocs</a> -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">assocs</a>) -&gt;<br/>       add:(string -&gt; 'a -&gt; 'map -&gt; 'map) -&gt;<br/>       empty:'map -&gt; 'a <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt; 'map <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre></div></contents></ocamldoc>
+<pre><span id="VALstring_map"><span class="keyword">val</span> string_map</span> : <code class="type">fold:((string -&gt; 'a -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">assocs</a> -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">assocs</a>) -&gt;<br/>             'map -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">assocs</a> -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">assocs</a>) -&gt;<br/>       add:(string -&gt; 'a -&gt; 'map -&gt; 'map) -&gt;<br/>       empty:'map -&gt; 'a <a href="Ocf.Wrapper.html#TYPEt">t</a> -&gt; 'map <a href="Ocf.Wrapper.html#TYPEt">t</a></code></pre><div class="info ">
+To create a map from strings to <code class="code">'a</code>. This will be stored in JSON as
+      <pre class="codepre"><code class="code"> { foo: ...,  bar: ..., ... } </code></pre>
+      Here <code class="code">foo</code> and <code class="code">bar</code> are the keys in the resulting map.
+      The <code class="code">Map.S.fold</code>, <code class="code">Map.S.add</code> and <code class="code">Map.S.empty</code> functions can
+      be used for parameters <code class="code">fold</code>, <code class="code">add</code> and <code class="code">empty</code>.<br/>
+</div>
+</div></contents></ocamldoc>

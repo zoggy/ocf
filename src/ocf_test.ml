@@ -76,11 +76,14 @@ let () =
 let () = print_endline (Ocf.to_string ~with_doc: true root)
 let () =
   try ignore(Ocf.add root ["foo" ; "bar" ; "x"] int_opt)
-  with Ocf.Error e -> prerr_endline (Ocf.string_of_error e)
+  with Ocf.Error e ->
+      prerr_endline ("Expected error: " ^ (Ocf.string_of_error e))
+
 let () =
   try ignore(Ocf.from_string root
     {| { foo: { bar : { x: "hello"}}} |})
-  with Ocf.Error e -> prerr_endline (Ocf.string_of_error e)
+  with Ocf.Error e ->
+      prerr_endline ("Expected error: " ^ (Ocf.string_of_error e))
 
 let options =
   [ Ocf.to_arg int_opt "-x" ;
