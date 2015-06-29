@@ -131,39 +131,49 @@ An option with a value of type <code class="code">'a</code>. When the option is 
   and calls the associated callback if any.<br/>
 </div>
 
-<pre><span id="TYPEgroup"><span class="keyword">type</span> group</span> </pre>
+<pre><span id="TYPEgroup"><span class="keyword">type</span> <code class="type">'a</code> group</span> </pre>
 <div class="info ">
-A group is used to group options and other groups.<br/>
+A group is used to group options and other groups.
+  An <code class="code">`Open</code> group is a group in which other options and groups can be
+  added. Nothing can be added to a <code class="code">`Closed</code> group.<br/>
 </div>
 
 
-<pre><span id="VALgroup"><span class="keyword">val</span> group</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info ">
-Create a new empty group.<br/>
+<pre><span id="VALgroup"><span class="keyword">val</span> group</span> : <code class="type">[ `Open ] <a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info ">
+Create a new empty open group.<br/>
 </div>
 
-<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; <a href="Ocf.html#TYPEpath">path</a> -&gt; 'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; <a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info ">
+<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">[ `Open ] <a href="Ocf.html#TYPEgroup">group</a> -&gt; <a href="Ocf.html#TYPEpath">path</a> -&gt; 'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; [ `Open ] <a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info ">
 <code class="code">add group path option</code> adds the given <code class="code">option</code> to
   <code class="code">group</code> at <code class="code">path</code>.<br/>
 </div>
 
-<pre><span id="VALadd_group"><span class="keyword">val</span> add_group</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; <a href="Ocf.html#TYPEpath">path</a> -&gt; <a href="Ocf.html#TYPEgroup">group</a> -&gt; <a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info ">
+<pre><span id="VALadd_group"><span class="keyword">val</span> add_group</span> : <code class="type">[ `Open ] <a href="Ocf.html#TYPEgroup">group</a> -&gt; <a href="Ocf.html#TYPEpath">path</a> -&gt; 'a <a href="Ocf.html#TYPEgroup">group</a> -&gt; [ `Open ] <a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info ">
 <code class="code">add_group group path g</code> adds the group <code class="code">g</code> to <code class="code">group</code> at <code class="code">path</code>.<br/>
+</div>
+
+<pre><span id="VALas_group"><span class="keyword">val</span> as_group</span> : <code class="type">'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; [ `Closed ] <a href="Ocf.html#TYPEgroup">group</a></code></pre><div class="info ">
+<code class="code">as_group option</code> creates a group from <code class="code">option</code>, i.e. like
+  if the given option had an empty access path. Useful for options
+  created from a record wrapper using the ppx extension.<br/>
 </div>
 <br/>
 <div class="subsection-title" id="convenient">Convenient functions to create options</div><br/>
 
 <pre><span id="VALint"><span class="keyword">val</span> int</span> : <code class="type">?doc:string -&gt; ?cb:(int -&gt; unit) -&gt; int -&gt; int <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
 <pre><span id="VALfloat"><span class="keyword">val</span> float</span> : <code class="type">?doc:string -&gt; ?cb:(float -&gt; unit) -&gt; float -&gt; float <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
+<pre><span id="VALbool"><span class="keyword">val</span> bool</span> : <code class="type">?doc:string -&gt; ?cb:(bool -&gt; unit) -&gt; bool -&gt; bool <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
 <pre><span id="VALstring"><span class="keyword">val</span> string</span> : <code class="type">?doc:string -&gt; ?cb:(string -&gt; unit) -&gt; string -&gt; string <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
 <pre><span id="VALlist"><span class="keyword">val</span> list</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a list -&gt; unit) -&gt; 'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a list -&gt; 'a list <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
 <pre><span id="VALoption_"><span class="keyword">val</span> option_</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a option -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a option -&gt; 'a option <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
 <pre><span id="VALpair"><span class="keyword">val</span> pair</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a * 'b -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'b <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a * 'b -&gt; ('a * 'b) <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
-<pre><span id="VALtriple"><span class="keyword">val</span> triple</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a * 'b * 'c -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt;<br/>       'b <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt;<br/>       'c <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a * 'b * 'c -&gt; ('a * 'b * 'c) <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre><br/>
+<pre><span id="VALtriple"><span class="keyword">val</span> triple</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('a * 'b * 'c -&gt; unit) -&gt;<br/>       'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt;<br/>       'b <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt;<br/>       'c <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'a * 'b * 'c -&gt; ('a * 'b * 'c) <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre>
+<pre><span id="VALstring_map"><span class="keyword">val</span> string_map</span> : <code class="type">?doc:string -&gt;<br/>       ?cb:('map -&gt; unit) -&gt;<br/>       fold:((string -&gt; 'a -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">Wrapper.assocs</a> -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">Wrapper.assocs</a>) -&gt;<br/>             'map -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">Wrapper.assocs</a> -&gt; <a href="Ocf.Wrapper.html#TYPEassocs">Wrapper.assocs</a>) -&gt;<br/>       add:(string -&gt; 'a -&gt; 'map -&gt; 'map) -&gt;<br/>       empty:'map -&gt; 'a <a href="Ocf.html#TYPEwrapper">wrapper</a> -&gt; 'map -&gt; 'map <a href="Ocf.html#TYPEconf_option">conf_option</a></code></pre><br/>
 <div class="section-title" id="input">Reading options</div><br/>
 
-<pre><span id="VALfrom_json"><span class="keyword">val</span> from_json</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; Yojson.Safe.json -&gt; unit</code></pre>
-<pre><span id="VALfrom_string"><span class="keyword">val</span> from_string</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre>
-<pre><span id="VALfrom_file"><span class="keyword">val</span> from_file</span> : <code class="type"><a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre><br/>
+<pre><span id="VALfrom_json"><span class="keyword">val</span> from_json</span> : <code class="type">'a <a href="Ocf.html#TYPEgroup">group</a> -&gt; Yojson.Safe.json -&gt; unit</code></pre>
+<pre><span id="VALfrom_string"><span class="keyword">val</span> from_string</span> : <code class="type">'a <a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre>
+<pre><span id="VALfrom_file"><span class="keyword">val</span> from_file</span> : <code class="type">'a <a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre><br/>
 <div class="section-title" id="output">Writing options</div>
 <div class="vertical-space"> </div>
 
@@ -174,9 +184,9 @@ the options it contains, with their current value.
 The <code class="code">with_doc</code> parameter indicates whether to output doc associated
 to options. Default is <code class="code">true</code>.<br/>
 
-<pre><span id="VALto_json"><span class="keyword">val</span> to_json</span> : <code class="type">?with_doc:bool -&gt; <a href="Ocf.html#TYPEgroup">group</a> -&gt; Yojson.Safe.json</code></pre>
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?with_doc:bool -&gt; <a href="Ocf.html#TYPEgroup">group</a> -&gt; string</code></pre>
-<pre><span id="VALto_file"><span class="keyword">val</span> to_file</span> : <code class="type">?with_doc:bool -&gt; <a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre><br/>
+<pre><span id="VALto_json"><span class="keyword">val</span> to_json</span> : <code class="type">?with_doc:bool -&gt; 'a <a href="Ocf.html#TYPEgroup">group</a> -&gt; Yojson.Safe.json</code></pre>
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?with_doc:bool -&gt; 'a <a href="Ocf.html#TYPEgroup">group</a> -&gt; string</code></pre>
+<pre><span id="VALto_file"><span class="keyword">val</span> to_file</span> : <code class="type">?with_doc:bool -&gt; 'a <a href="Ocf.html#TYPEgroup">group</a> -&gt; string -&gt; unit</code></pre><br/>
 <div class="section-title" id="2_Buildingcommandlinearguments">Building command line arguments</div><br/>
 
 <pre><span id="VALto_arg"><span class="keyword">val</span> to_arg</span> : <code class="type">'a <a href="Ocf.html#TYPEconf_option">conf_option</a> -&gt; ?doc:Arg.doc -&gt; Arg.key -&gt; Arg.key * Arg.spec * Arg.doc</code></pre><div class="info ">

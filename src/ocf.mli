@@ -124,7 +124,9 @@ val get : 'a conf_option -> 'a
   and calls the associated callback if any. *)
 val set : 'a conf_option -> 'a -> unit
 
-(** A group is used to group options and other groups. *)
+(** A group is used to group options and other groups.
+  An [`Open] group is a group in which other options and groups can be
+  added. Nothing can be added to a [`Closed] group. *)
 type 'a group
 
 (** Create a new empty open group. *)
