@@ -158,6 +158,26 @@ module Wrapper =
       | json -> invalid_value json
       in
       make to_j from_j
+
+    type assocs = (string * Yojson.Safe.json) list
+    let string_map ~fold ~add ~empty w =
+      let to_j map =
+        let l =
+          fold
+            (fun k v acc -> (k, w.to_json v) :: acc)
+            map []
+        in
+        `Assoc l
+      in
+      let from_j ?def = function
+      | `Assoc l ->
+          List.fold_left
+            (fun map (k, v) ->
+               add k (w.from_json v) map)
+            empty l
+      | json -> invalid_value json
+      in
+      make to_j from_j
   end
 
 type 'a wrapper = 'a Wrapper.t
@@ -194,6 +214,8 @@ let list ?doc ?cb w l = option ?doc ?cb (Wrapper.list w) l
 let option_ ?doc ?cb w l = option ?doc ?cb (Wrapper.option w) l
 let pair ?doc ?cb w1 w2 x = option ?doc ?cb (Wrapper.pair w1 w2) x
 let triple ?doc ?cb w1 w2 w3 x = option ?doc ?cb (Wrapper.triple w1 w2 w3) x
+let string_map ?doc ?cb ~fold ~add ~empty w x =
+  option ?doc ?cb (Wrapper.string_map ~fold ~add ~empty w) x
 
 type node =
   | Option of conf_option_

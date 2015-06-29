@@ -1,5 +1,7 @@
 Release 0.3.0:
 - add Ocf.Wrapper.bool and Ocf.bool to create options with boolean values
+- add Ocf.Wrapper.string_map and Ocf.string_map to create options
+  whose values are map from string to 'a.
 
 Release 0.2.0:
 - (ppx) fix: do not build empty value declarations

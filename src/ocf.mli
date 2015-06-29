@@ -90,6 +90,13 @@ module Wrapper : sig
     val option : 'a t -> 'a option t
     val pair : 'a t -> 'b t -> ('a * 'b) t
     val triple : 'a t -> 'b t -> 'c t -> ('a * 'b * 'c) t
+
+    type assocs = (string * Yojson.Safe.json) list
+    val string_map :
+      fold: ((string -> 'a -> assocs -> assocs) -> 'map -> assocs -> assocs) ->
+        add: (string -> 'a -> 'map -> 'map) ->
+          empty: 'map ->
+            'a t -> 'map t
   end
 
 type 'a wrapper = 'a Wrapper.t
@@ -144,6 +151,12 @@ val pair : ?doc: string -> ?cb: ('a * 'b -> unit) ->
 val triple : ?doc: string -> ?cb: ('a * 'b * 'c -> unit) ->
   'a wrapper -> 'b wrapper -> 'c wrapper ->
     'a * 'b * 'c -> ('a * 'b * 'c) conf_option
+val string_map :
+  ?doc: string -> ?cb: ('map -> unit) ->
+    fold: ((string -> 'a -> Wrapper.assocs -> Wrapper.assocs) -> 'map -> Wrapper.assocs -> Wrapper.assocs) ->
+      add: (string -> 'a -> 'map -> 'map) ->
+        empty: 'map -> 'a wrapper ->
+          'map-> 'map conf_option
 
 (** {2:input Reading options} *)
 
