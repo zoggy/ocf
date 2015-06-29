@@ -64,7 +64,7 @@ let exn_at_path p e = error (Exn_at_path (p, e))
 module Wrapper =
   struct
     type 'a t = {
-        to_json : 'a -> Yojson.Safe.json ;
+        to_json : ?with_doc: bool -> 'a -> Yojson.Safe.json ;
         from_json : ?def: 'a -> Yojson.Safe.json -> 'a ;
       }
 
@@ -75,7 +75,7 @@ module Wrapper =
       | `Error msg -> invalid_value json
 
     let int =
-      let to_j n = `Int n in
+      let to_j ?with_doc n = `Int n in
       let from_j ?def = function
         `Int n -> n
       | (`Intlit s)
@@ -86,7 +86,7 @@ module Wrapper =
       make to_j from_j
 
     let float =
-      let to_j x = `Float x in
+      let to_j ?with_doc x = `Float x in
       let from_j ?def = function
         `Float x -> x
       | `Int n -> float n
@@ -98,14 +98,14 @@ module Wrapper =
       make to_j from_j
 
     let bool =
-      let to_j x = `Bool x in
+      let to_j ?with_doc x = `Bool x in
       let from_j ?def = function
         `Bool x -> x
       | json -> invalid_value json
       in
       make to_j from_j
 
-    let string_to_json x = `String x
+    let string_to_json ?with_doc x = `String x
     let string_from_json ?def = function
     | `Intlit s
     | `String s -> s
@@ -116,12 +116,12 @@ module Wrapper =
       make string_to_json string_from_json
 
     let string_ to_str from_str =
-      let to_j x = string_to_json (to_str x) in
+      let to_j ?with_doc x = string_to_json ?with_doc (to_str x) in
       let from_j ?def x = from_str (string_from_json x) in
       make to_j from_j
 
     let list w =
-      let to_j l = `List (List.map w.to_json l) in
+      let to_j ?with_doc l = `List (List.map (w.to_json ?with_doc) l) in
       let from_j ?def = function
       | `List l
       | `Tuple l -> List.map (w.from_json ?def: None) l
@@ -131,7 +131,10 @@ module Wrapper =
       make to_j from_j
 
     let option w =
-      let to_j = function None -> `Null | Some x -> w.to_json x in
+      let to_j ?with_doc = function
+      | None -> `Null
+      | Some x -> w.to_json ?with_doc x
+      in
       let from_j ?def = function
         `Null -> None
       | x -> Some (w.from_json x)
@@ -139,7 +142,9 @@ module Wrapper =
       make to_j from_j
 
     let pair w1 w2 =
-      let to_j (v1, v2) = `Tuple [w1.to_json v1 ; w2.to_json v2] in
+      let to_j ?with_doc (v1, v2) =
+        `Tuple [w1.to_json ?with_doc v1 ; w2.to_json ?with_doc v2]
+      in
       let from_j ?def = function
         `List [v1 ; v2]
       | `Tuple [v1 ; v2] -> (w1.from_json v1, w2.from_json v2)
@@ -148,8 +153,12 @@ module Wrapper =
       make to_j from_j
 
     let triple w1 w2 w3 =
-      let to_j (v1, v2, v3) =
-        `Tuple [w1.to_json v1 ; w2.to_json v2 ; w3.to_json v3]
+      let to_j ?with_doc (v1, v2, v3) =
+        `Tuple [
+          w1.to_json ?with_doc v1 ;
+          w2.to_json ?with_doc v2 ;
+          w3.to_json ?with_doc v3 ;
+        ]
       in
       let from_j ?def = function
         `List [v1 ; v2 ; v3]
@@ -161,10 +170,10 @@ module Wrapper =
 
     type assocs = (string * Yojson.Safe.json) list
     let string_map ~fold ~add ~empty w =
-      let to_j map =
+      let to_j ?with_doc map =
         let l =
           fold
-            (fun k v acc -> (k, w.to_json v) :: acc)
+            (fun k v acc -> (k, w.to_json ?with_doc v) :: acc)
             map []
         in
         `Assoc l
@@ -219,11 +228,10 @@ let string_map ?doc ?cb ~fold ~add ~empty w x =
 
 type node =
   | Option of conf_option_
-  | Section of group
+  | Group of node SMap.t
 
-and group = node SMap.t
-
-let group = SMap.empty
+and 'a group = node
+let group = Group SMap.empty
 
 let rec add ?(acc_path=[]) group path node =
   match path with
@@ -242,19 +250,28 @@ let rec add ?(acc_path=[]) group path node =
           let map = add
             ~acc_path: (h::acc_path) SMap.empty q node
           in
-          SMap.add h (Section map) group
+          SMap.add h (Group map) group
       | Option _ ->
           path_conflict (List.rev (h::acc_path))
-      | Section _ when q = [] ->
+      | Group _ when q = [] ->
           path_conflict (List.rev (h::acc_path))
-      | Section map ->
+      | Group map ->
           let map = add
             ~acc_path: (h::acc_path) map q node
           in
-          SMap.add h (Section map) group
+          SMap.add h (Group map) group
 
-let add_group group path g = add ?acc_path: None group path (Section g)
-let add group path option = add ?acc_path: None group path (Option option)
+let add_group group path g =
+  match group with
+    Option _ -> assert false
+  | Group map -> Group (add ?acc_path: None map path g)
+
+let add group path option =
+  match group with
+  | Option _ -> assert false
+  | Group map -> Group (add ?acc_path: None map path (Option option))
+
+let as_group o = Option o
 
 let from_json_option path option json =
   try
@@ -273,7 +290,7 @@ let rec from_json_group =
     | json ->
         match node with
           Option o -> from_json_option (List.rev (str :: path)) o json
-        | Section map ->
+        | Group map ->
             from_json_group ~path: (str :: path) map json
   in
   fun ?(path=[]) map json ->
@@ -285,7 +302,9 @@ let rec from_json_group =
         SMap.iter (f path assocs) map
     | _ -> invalid_value json
 
-let from_json = from_json_group ?path: None
+let from_json = function
+  Option o -> from_json_option [] o
+| Group g -> from_json_group ?path: None g
 
 let from_string map str =
   try
@@ -302,25 +321,28 @@ let from_file map file =
     Yojson.Json_error msg ->
       json_error msg
 
-let to_json_option option = option.wrapper.Wrapper.to_json option.value
+let to_json_option ?with_doc option =
+  option.wrapper.Wrapper.to_json ?with_doc option.value
 
-let rec to_json_group ?(with_doc=true) map =
+let rec to_json_group ?with_doc map =
   let f name node acc =
     match node with
-    | Section map -> (name, to_json_group ~with_doc map) :: acc
+    | Group map -> (name, to_json_group ?with_doc map) :: acc
     | Option o ->
-        let acc = (name, to_json_option o) :: acc in
+        let acc = (name, to_json_option ?with_doc o) :: acc in
         match with_doc, o.doc with
-        | true, Some str -> (name, `String str) :: acc
-        | false, _
-        | _, None -> acc
+        | Some true, Some str -> (name, `String str) :: acc
+        | _, _ -> acc
   in
   `Assoc (SMap.fold f map [])
 
-let to_json = to_json_group
+let to_json ?(with_doc=true) = function
+| Option o -> to_json_option ~with_doc o
+| Group g -> to_json_group ~with_doc g
 
 let to_string ?with_doc map =
   Yojson.Safe.pretty_to_string (to_json ?with_doc map)
+
 let to_file ?with_doc map file =
   let oc = open_out file in
   Yojson.Safe.pretty_to_channel oc (to_json ?with_doc map);

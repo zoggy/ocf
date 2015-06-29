@@ -46,14 +46,14 @@ let group = Ocf.add group ["option"] opt_opt
 let root = Ocf.group
 let root = Ocf.add_group root ["foo" ; "bar"] group
 
-let str = Ocf.to_string root
+let str = Ocf.to_string ~with_doc: true root
 let () = print_endline str
 let () = Ocf.from_string root str
 
 
 type ('a,'b) t = {
     t_int : int  [@ocf Ocf.Wrapper.int, 10] [@ocf.label "n"];
-    t_list : 'a list [@ocf Ocf.Wrapper.list, []] ;
+    t_list : 'a list [@ocf Ocf.Wrapper.list, []][@ocf.doc "the list of alpha-stuff"] ;
     t_list2 : 'a list [@ocf.wrapper Ocf.Wrapper.list] [@ocf.default []] ;
     t_par: 'b ;
     t_cons : 'b option  [@ocf.wrapper Ocf.Wrapper.option] ;
@@ -73,7 +73,7 @@ let () =
      {| { t : ( { n: 1, t_list: ("hello", "world", "!") }, { n: 100 } ) } |})
 (*  with Ocf.Error e -> prerr_endline (Ocf.string_of_error e)*)
 
-let () = print_endline (Ocf.to_string root)
+let () = print_endline (Ocf.to_string ~with_doc: true root)
 let () =
   try ignore(Ocf.add root ["foo" ; "bar" ; "x"] int_opt)
   with Ocf.Error e -> prerr_endline (Ocf.string_of_error e)

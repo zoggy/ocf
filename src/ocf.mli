@@ -67,12 +67,13 @@ some type from and to JSON.
 
 module Wrapper : sig
     type 'a t = {
-        to_json : 'a -> Yojson.Safe.json ;
+        to_json : ?with_doc: bool -> 'a -> Yojson.Safe.json ;
         from_json : ?def: 'a -> Yojson.Safe.json -> 'a ;
       }
 
-    val make : ('a -> Yojson.Safe.json) ->
-      (?def: 'a -> Yojson.Safe.json -> 'a) -> 'a t
+    val make :
+      (?with_doc: bool -> 'a -> Yojson.Safe.json) ->
+        (?def: 'a -> Yojson.Safe.json -> 'a) -> 'a t
 
     (** [of_ok_error f json] applies [f] to [json]. If it returns
       [`Ok x], then [x] is returned. Else {!invalid_value} is called
@@ -124,17 +125,22 @@ val get : 'a conf_option -> 'a
 val set : 'a conf_option -> 'a -> unit
 
 (** A group is used to group options and other groups. *)
-type group
+type 'a group
 
-(** Create a new empty group. *)
-val group : group
+(** Create a new empty open group. *)
+val group : [`Open] group
 
 (** [add group path option] adds the given [option] to
   [group] at [path]. *)
-val add : group -> path -> 'a conf_option -> group
+val add : [`Open] group -> path -> 'a conf_option -> [`Open] group
 
 (** [add_group group path g] adds the group [g] to [group] at [path].*)
-val add_group : group -> path -> group -> group
+val add_group : [`Open] group -> path -> 'a group -> [`Open] group
+
+(** [as_group option] creates a group from [option], i.e. like
+  if the given option had an empty access path. Useful for options
+  created from a record wrapper using the ppx extension. *)
+val as_group : 'a conf_option -> [`Closed] group
 
 (** {3:convenient Convenient functions to create options} *)
 
@@ -160,9 +166,9 @@ val string_map :
 
 (** {2:input Reading options} *)
 
-val from_json : group -> Yojson.Safe.json -> unit
-val from_string : group -> string -> unit
-val from_file : group -> string -> unit
+val from_json : 'a group -> Yojson.Safe.json -> unit
+val from_string : 'a group -> string -> unit
+val from_file : 'a group -> string -> unit
 
 
 (** {2:output Writing options}
@@ -174,9 +180,9 @@ The [with_doc] parameter indicates whether to output doc associated
 to options. Default is [true].
 *)
 
-val to_json : ?with_doc: bool -> group -> Yojson.Safe.json
-val to_string : ?with_doc: bool -> group -> string
-val to_file : ?with_doc: bool -> group -> string -> unit
+val to_json : ?with_doc: bool -> 'a group -> Yojson.Safe.json
+val to_string : ?with_doc: bool -> 'a group -> string
+val to_file : ?with_doc: bool -> 'a group -> string -> unit
 
 (** {2 Building command line arguments} *)
 

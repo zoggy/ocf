@@ -86,6 +86,7 @@ let has_ocf_attribute attrs =
 type field =
   { name : string loc ;
     label : string loc ;
+    doc: expression option ;
     params : string list ;
     wrapper : expression option ;
     default : expression option ;
@@ -121,6 +122,17 @@ let mk_field l =
     | Some (x,_) ->
         kerror x.loc
           "Invalid expression for %s.label; a string is expected"
+          ocf_att_prefix
+  in
+  let doc = match attribute (ocf_att_prefix^".doc")
+      l.pld_type.ptyp_attributes
+    with
+    | None -> None
+    | Some (_,PStr [{pstr_desc = Pstr_eval (e,_)}]) ->
+        Some e
+    | Some (x,_) ->
+        kerror x.loc
+          "Invalid expression for %s.doc; an expression is expected"
           ocf_att_prefix
   in
   let (wrapper, default) =
@@ -170,7 +182,7 @@ let mk_field l =
     | _ -> []
   in
   { name = l.pld_name ;
-    label ; params ; wrapper ; default
+    label ; doc ; params ; wrapper ; default
   }
 
 let mk_default decl fields =
@@ -226,15 +238,33 @@ let mk_wrapper decl fields =
   let to_json_exprs =
     let f fd =
       let to_json =
-        [%expr [%e w_lid fd].Ocf.Wrapper.to_json]
+        [%expr [%e w_lid fd].Ocf.Wrapper.to_json ?with_doc]
       in
       let fd_exp = Exp.field
         [%expr t] (lid fd.name.loc (fd.name.txt))
       in
-      [%expr (
-        [%e mk_string fd.label.loc fd.label.txt],
-        [%e to_json] [%e fd_exp]
-        )]
+      let assoc =
+        [%expr
+          ([%e mk_string fd.label.loc fd.label.txt],
+           [%e to_json ] [%e fd_exp] )
+        ]
+      in
+      let e =
+        match fd.doc with
+          None -> [%expr [ [%e assoc] ] ]
+        | Some exp_doc ->
+            [%expr
+              match with_doc with
+              | Some true ->
+                  [
+                    [%e mk_string fd.label.loc fd.label.txt],
+                    `String [%e exp_doc] ;
+                    [%e assoc] ;
+                  ]
+              | _ -> [ [%e assoc] ]
+            ]
+      in
+      e
     in
     mk_list decl.ptype_loc (List.map f fields)
   in
@@ -263,8 +293,8 @@ let mk_wrapper decl fields =
     Exp.record (List.map f fields) None
   in
   let expr = [%expr
-      let to_j = fun t ->
-        `Assoc [%e to_json_exprs]
+      let to_j ?with_doc t =
+        `Assoc (List.flatten [%e to_json_exprs])
       in
       let get w def label map =
         match Ocf.SMap.find label map with
