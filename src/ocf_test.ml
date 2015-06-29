@@ -30,6 +30,7 @@
 
 let int_opt = Ocf.int ~doc: "this is x"
   ~cb: (fun n -> prerr_endline ("x="^(string_of_int n))) 0
+let bool_opt = Ocf.bool ~doc: "to be or not to be" true
 let float_opt = Ocf.float 3.14
 let string_opt = Ocf.string ~doc: "string option"
   ~cb: prerr_endline "hello world!"
@@ -38,6 +39,7 @@ let opt_opt = Ocf.option_ Ocf.Wrapper.int None
 let group = Ocf.group
 let group = Ocf.add group ["x"] int_opt
 let group = Ocf.add group ["x_float"] float_opt
+let group = Ocf.add group ["boolean"] bool_opt
 let group = Ocf.add group ["msg"] string_opt
 let group = Ocf.add group ["option"] opt_opt
 

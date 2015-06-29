@@ -97,6 +97,14 @@ module Wrapper =
       in
       make to_j from_j
 
+    let bool =
+      let to_j x = `Bool x in
+      let from_j ?def = function
+        `Bool x -> x
+      | json -> invalid_value json
+      in
+      make to_j from_j
+
     let string_to_json x = `String x
     let string_from_json ?def = function
     | `Intlit s
@@ -180,6 +188,7 @@ let option : ?doc: string -> ?cb: ('a -> unit) ->
 
 let int ?doc ?cb n = option ?doc ?cb Wrapper.int n
 let float ?doc ?cb x = option ?doc ?cb Wrapper.float x
+let bool ?doc ?cb x = option ?doc ?cb Wrapper.bool x
 let string ?doc ?cb s = option ?doc ?cb Wrapper.string s
 let list ?doc ?cb w l = option ?doc ?cb (Wrapper.list w) l
 let option_ ?doc ?cb w l = option ?doc ?cb (Wrapper.option w) l

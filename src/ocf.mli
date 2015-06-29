@@ -83,6 +83,7 @@ module Wrapper : sig
 
     val int : int t
     val float : float t
+    val bool : bool t
     val string : string t
     val string_ : ('a -> string) -> (string -> 'a) -> 'a t
     val list : 'a t -> 'a list t
@@ -132,6 +133,7 @@ val add_group : group -> path -> group -> group
 
 val int : ?doc: string -> ?cb: (int -> unit) -> int -> int conf_option
 val float : ?doc: string -> ?cb: (float -> unit) -> float -> float conf_option
+val bool : ?doc: string -> ?cb: (bool -> unit) -> bool -> bool conf_option
 val string : ?doc: string -> ?cb: (string -> unit) -> string -> string conf_option
 val list : ?doc: string -> ?cb: ('a list -> unit) -> 'a wrapper ->
   'a list -> 'a list conf_option
