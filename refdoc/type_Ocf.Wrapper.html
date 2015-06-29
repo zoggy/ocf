@@ -29,17 +29,18 @@
 <div class="ocamldoc-page">
 <code class="code"><span class="keyword">sig</span><br/>
   <span class="keyword">type</span> <span class="keywordsign">'</span>a t = {<br/>
-    to_json : <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json;<br/>
+    to_json : ?with_doc:bool <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json;<br/>
     from_json : ?def:<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a;<br/>
   }<br/>
   <span class="keyword">val</span> make :<br/>
-    (<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json) <span class="keywordsign">-&gt;</span><br/>
+    (?with_doc:bool <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json) <span class="keywordsign">-&gt;</span><br/>
     (?def:<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
   <span class="keyword">val</span> of_ok_error :<br/>
     (<span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json <span class="keywordsign">-&gt;</span> [ <span class="keywordsign">`</span><span class="constructor">Error</span> <span class="keyword">of</span> <span class="keywordsign">'</span>b <span class="keywordsign">|</span> <span class="keywordsign">`</span><span class="constructor">Ok</span> <span class="keyword">of</span> <span class="keywordsign">'</span>a ]) <span class="keywordsign">-&gt;</span><br/>
     <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a<br/>
   <span class="keyword">val</span> int : int <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
   <span class="keyword">val</span> float : float <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+  <span class="keyword">val</span> bool : bool <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
   <span class="keyword">val</span> string : string <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
   <span class="keyword">val</span> string_ : (<span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> string) <span class="keywordsign">-&gt;</span> (string <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a) <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
   <span class="keyword">val</span> list : <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a list <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
@@ -48,6 +49,12 @@
   <span class="keyword">val</span> triple :<br/>
     <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span><br/>
     <span class="keywordsign">'</span>b <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>c <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> (<span class="keywordsign">'</span>a * <span class="keywordsign">'</span>b * <span class="keywordsign">'</span>c) <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
+  <span class="keyword">type</span> assocs = (string * <span class="constructor">Yojson</span>.<span class="constructor">Safe</span>.json) list<br/>
+  <span class="keyword">val</span> string_map :<br/>
+    fold:((string <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.assocs <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.assocs) <span class="keywordsign">-&gt;</span><br/>
+          <span class="keywordsign">'</span>map <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.assocs <span class="keywordsign">-&gt;</span> <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.assocs) <span class="keywordsign">-&gt;</span><br/>
+    add:(string <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>map <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>map) <span class="keywordsign">-&gt;</span><br/>
+    empty:<span class="keywordsign">'</span>map <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>a <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t <span class="keywordsign">-&gt;</span> <span class="keywordsign">'</span>map <span class="constructor">Ocf</span>.<span class="constructor">Wrapper</span>.t<br/>
 <span class="keyword">end</span></code></div>
 
 

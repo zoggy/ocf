@@ -119,7 +119,8 @@ p {
   margin-bottom: 21px; }
 
 a {
-  color: #c22; }
+  color: #c22;
+  text-decoration: none; }
 
 a:visited {
   color: #900; }
@@ -174,6 +175,9 @@ code, span.icode {
   background-image: url("extlink.png");
   background-repeat: no-repeat;
   background-position: right; }
+
+.notes {
+  font-size: 90%; }
 
 .navbar {
   margin: 0;
