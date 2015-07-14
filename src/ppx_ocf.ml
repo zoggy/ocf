@@ -100,15 +100,24 @@ let params_of_type_params l =
   in
   list_remove_doubles (List.fold_right f l [])
 
-let attribute name atts =
+let attribute_ name atts =
   try
     Some (List.find(fun ({txt},_) -> txt = name) atts)
   with Not_found -> None
+let attribute =
+  let rec iter name = function
+    [] -> None
+  | h :: q ->
+      match attribute_ name h with
+        None -> iter name q
+      | Some x -> Some x
+  in
+  iter
 
 let mk_field l =
   let label =
     match attribute (ocf_att_prefix^".label")
-      l.pld_type.ptyp_attributes
+      [ l.pld_attributes ; l.pld_type.ptyp_attributes ]
     with
     | None -> l.pld_name
     | Some (_,PStr [
@@ -125,7 +134,7 @@ let mk_field l =
           ocf_att_prefix
   in
   let doc = match attribute (ocf_att_prefix^".doc")
-      l.pld_type.ptyp_attributes
+      [ l.pld_attributes ; l.pld_type.ptyp_attributes ]
     with
     | None -> None
     | Some (_,PStr [{pstr_desc = Pstr_eval (e,_)}]) ->
@@ -136,7 +145,7 @@ let mk_field l =
           ocf_att_prefix
   in
   let (wrapper, default) =
-    let atts = l.pld_type.ptyp_attributes in
+    let atts = [ l.pld_attributes ; l.pld_type.ptyp_attributes ] in
     match attribute ocf_att_prefix atts with
     | None ->
         begin

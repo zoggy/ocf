@@ -1,3 +1,6 @@
+Next release:
+- fix: handle change in attribute location in records in ocal 4.02.2
+
 Release 0.3.0:
 - add Ocf.Wrapper.bool and Ocf.bool to create options with boolean values
 - add Ocf.Wrapper.string_map and Ocf.string_map to create options
