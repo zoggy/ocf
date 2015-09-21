@@ -270,7 +270,7 @@ value and the wrapper for this type will have parameters:
 type ('a, 'b) entry = {
   key: 'a ; (* wrapper and default value will be parameters *)
   value: 'b list [@ocf Ocf.Wrapper.list, [] ] ;
-           (* a wrapper will be expected as parameter forr 'b, but default value []
+           (* a wrapper will be expected as parameter for 'b, but default value []
               is already provided *)
   value2: string option [@ocf.wrapper Ocf.Wrapper.option Ocf.Wrapper.string] ;
            (* a wrapper is provided, but no default value *)
