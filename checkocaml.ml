@@ -888,7 +888,7 @@ let add_conf_variables c =
 (*/c==m=[OCaml_conf]=0.10=t==*)
 
 let ocaml_required = [4;02;1]
-let conf = ocaml_conf ~ocamlfind: true ~camlp4: true ();;
+let conf = ocaml_conf ~ocamlfind: true ();;
 print_conf conf;;
 
 let _ =

@@ -1,5 +1,6 @@
 Next release:
 - fix: handle change in attribute location in records in ocal 4.02.2
+- configure script does not require camlp4 (which is not used)
 
 Release 0.3.0:
 - add Ocf.Wrapper.bool and Ocf.bool to create options with boolean values
