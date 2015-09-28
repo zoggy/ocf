@@ -298,7 +298,7 @@ val server_wrapper : server Ocf.Wrapper.t =
 </div></div></pre>
 
 <p>
-To trigger the generation, the type definition must have a <span class="icode"><span class="hl std">[@@</span><span class="">ocf</span><span class="hl std">]&gt;</span></span>
+To trigger the generation, the type definition must have a <span class="icode"><span class="hl std">[@@</span><span class="">ocf</span><span class="hl std">]</span></span>
 attribute.
 Each field can have a <span class="icode"><span class="hl std">[@</span><span class="">ocf</span><span class="hl std"> ]</span></span> attribute (on the type)
 with a pair of expressions. The first part of the pair is the wrapper,
@@ -356,7 +356,7 @@ value and the wrapper for this type will have parameters:
 <pre class="code-ocaml"><div># <span class="hl kwa">type</span><span class="hl std"> ('</span><span class="">a</span><span class="hl std">, '</span><span class="">b</span><span class="hl std">) </span><span class="">entry</span><span class="hl std"> = {
   </span><span class="">key</span><span class="hl std">: '</span><span class="">a</span><span class="hl std"> ; </span><span class="hl com">(* wrapper and default value will be parameters *)</span><span class="hl std">
   </span><span class="">value</span><span class="hl std">: '</span><span class="">b</span><span class="hl std"> </span><span class="hl kwd">list</span><span class="hl std"> [@</span><span class="">ocf</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="hl kwd">list</span><span class="hl std">, [] ] ;
-           </span><span class="hl com">(* a wrapper will be expected as parameter forr 'b, but default value []
+           </span><span class="hl com">(* a wrapper will be expected as parameter for 'b, but default value []
               is already provided *)</span><span class="hl std">
   </span><span class="">value2</span><span class="hl std">: </span><span class="hl kwd">string</span><span class="hl std"> </span><span class="">option</span><span class="hl std"> [@</span><span class="">ocf</span><span class="hl std">.</span><span class="">wrapper</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="">option</span><span class="hl std"> </span><span class="hl kwc">Ocf</span><span class="hl std">.</span><span class="hl kwc">Wrapper</span><span class="hl std">.</span><span class="hl kwd">string</span><span class="hl std">] ;
            </span><span class="hl com">(* a wrapper is provided, but no default value *)</span><span class="hl std">
