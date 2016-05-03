@@ -1,4 +1,7 @@
-Next release:
+Release 0.5.0:
+- upgrade to OCaml 4.03.0
+
+Release 0.4.0:
 - fix: handle change in attribute location in records in ocaml 4.02.2
 - configure script does not require camlp4 (which was not used)
 
