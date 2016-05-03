@@ -38,8 +38,8 @@ module SMap = Map.Make(String)
 
 let lid loc s = Location.mkloc (Longident.parse s) loc
 let apply ?loc e args = Ast_helper.Exp.apply ?loc e
-  (List.map (fun e -> ("", e)) args)
-let mk_string loc s = Exp.constant ~loc (Const_string (s, None))
+  (List.map (fun e -> (Nolabel, e)) args)
+let mk_string loc s = Exp.constant ~loc (Pconst_string (s, None))
 let noloc_lid s = Location.mknoloc (Longident.parse s)
 let cons loc = lid loc "::"
 let empty_list = Ast_helper.Exp.construct (noloc_lid "[]") None
@@ -123,7 +123,7 @@ let mk_field l =
     | Some (_,PStr [
           {
             pstr_desc = Pstr_eval
-               ({ pexp_desc = Pexp_constant (Const_string (label, _));
+               ({ pexp_desc = Pexp_constant (Pconst_string (label, _));
                   pexp_loc }, _)
           }
         ]) ->
@@ -213,7 +213,7 @@ let mk_default decl fields =
        | Some _ -> expr
        | None ->
            let pat = Pat.var fd.name in
-           Exp.fun_ fd.name.txt None pat expr
+           Exp.fun_ (Labelled fd.name.txt) None pat expr
     )
     fields record
   in
@@ -344,7 +344,7 @@ let mk_wrapper decl fields =
       | Some _ -> expr
       | None ->
           let pat = Pat.var fd.name in
-          Exp.fun_ fd.name.txt None pat expr
+          Exp.fun_ (Labelled fd.name.txt) None pat expr
     in
     List.fold_right f fields expr
   in
@@ -368,7 +368,7 @@ let generate decl =
 
 let fold_structure acc item =
   match item.pstr_desc with
-  | (Pstr_type l) ->
+  | (Pstr_type (_,l)) ->
       let type_decls = List.filter
         (fun decl -> has_ocf_attribute decl.ptype_attributes) l
       in
