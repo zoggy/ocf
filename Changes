@@ -1,3 +1,6 @@
+Next release:
+- checkocaml.ml script handles version number modifiers
+
 Release 0.5.0:
 - upgrade to OCaml 4.03.0
 
