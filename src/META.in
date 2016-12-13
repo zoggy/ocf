@@ -9,6 +9,6 @@ archive(plugin,native) = "ocf.cmxs"
 package "ppx" (
   ppx(byte) = "./ppx_ocf.byte"
   ppx(-byte) = "./ppx_ocf"
-
+  version = "@VERSION@"
 )
 
