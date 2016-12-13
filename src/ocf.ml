@@ -352,7 +352,7 @@ let to_arg option ?doc key =
   let doc =
     match doc, option.doc with
       Some s, _
-    | None, Some s -> s
+    | None, Some s -> "... "^s
     | None, None -> ""
   in
   let f str =
