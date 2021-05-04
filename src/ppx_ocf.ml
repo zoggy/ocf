@@ -36,13 +36,16 @@ open Longident
 
 module SMap = Map.Make(String)
 
-let lid loc s = Location.mkloc (Longident.parse s) loc
+let lid ?(loc=Location.none) s =
+  let b = Lexing.from_string s in
+  let p = loc.Location.loc_start in
+  let b = { b with Lexing.lex_start_p = p; lex_curr_p = p } in
+  Location.mkloc (Parse.longident b) loc
 let apply ?loc e args = Ast_helper.Exp.apply ?loc e
   (List.map (fun e -> (Nolabel, e)) args)
-let mk_string loc s = Exp.constant ~loc (Pconst_string (s, None))
-let noloc_lid s = Location.mknoloc (Longident.parse s)
-let cons loc = lid loc "::"
-let empty_list = Ast_helper.Exp.construct (noloc_lid "[]") None
+let mk_string loc s = Exp.constant ~loc (Pconst_string (s, Location.none, None))
+let cons loc = lid ~loc "(::)"
+let empty_list = Ast_helper.Exp.construct (lid "[]") None
 let mk_list loc l = List.fold_right
   (fun e acc -> Ast_helper.Exp.construct (cons loc)
      (Some (Ast_helper.Exp.tuple [ e ; acc ])))
@@ -80,7 +83,7 @@ let get_ocf_attr = function
 
 let has_ocf_attribute attrs =
   List.exists
-    (fun (att,_) -> get_ocf_attr att.txt <> None)
+    (fun {attr_name} -> get_ocf_attr attr_name.txt <> None)
     attrs
 
 type field =
@@ -101,8 +104,7 @@ let params_of_type_params l =
   list_remove_doubles (List.fold_right f l [])
 
 let attribute_ name atts =
-  try
-    Some (List.find(fun ({txt},_) -> txt = name) atts)
+  try Some (List.find(fun {attr_name = {txt}} -> txt = name) atts)
   with Not_found -> None
 let attribute =
   let rec iter name = function
@@ -120,15 +122,15 @@ let mk_field l =
       [ l.pld_attributes ; l.pld_type.ptyp_attributes ]
     with
     | None -> l.pld_name
-    | Some (_,PStr [
+    | Some {attr_payload = PStr [
           {
             pstr_desc = Pstr_eval
-               ({ pexp_desc = Pexp_constant (Pconst_string (label, _));
+               ({ pexp_desc = Pexp_constant (Pconst_string (label, _, _));
                   pexp_loc }, _)
           }
-        ]) ->
+        ]} ->
         { txt = label ; loc = pexp_loc }
-    | Some (x,_) ->
+    | Some {attr_name=x} ->
         kerror x.loc
           "Invalid expression for %s.label; a string is expected"
           ocf_att_prefix
@@ -137,9 +139,9 @@ let mk_field l =
       [ l.pld_attributes ; l.pld_type.ptyp_attributes ]
     with
     | None -> None
-    | Some (_,PStr [{pstr_desc = Pstr_eval (e,_)}]) ->
+    | Some {attr_payload = PStr [{pstr_desc = Pstr_eval (e,_)}]} ->
         Some e
-    | Some (x,_) ->
+    | Some {attr_name = x} ->
         kerror x.loc
           "Invalid expression for %s.doc; an expression is expected"
           ocf_att_prefix
@@ -152,8 +154,8 @@ let mk_field l =
           let wrapper =
             match attribute (ocf_att_prefix^".wrapper") atts with
               None -> None
-            | Some (_,PStr [ { pstr_desc = Pstr_eval (e,_) } ]) -> Some e
-            | Some (x,_) ->
+            | Some {attr_payload = PStr [ { pstr_desc = Pstr_eval (e,_) } ]} -> Some e
+            | Some {attr_name = x} ->
                 kerror x.loc
                   "Invalid payload for %s.wrapper; an expression is expected"
                   ocf_att_prefix
@@ -161,8 +163,8 @@ let mk_field l =
           let default =
             match attribute (ocf_att_prefix^".default") atts with
               None -> None
-            | Some (_,PStr [ { pstr_desc = Pstr_eval (e,_) } ]) -> Some e
-            | Some (x,_) ->
+            | Some {attr_payload = PStr [ { pstr_desc = Pstr_eval (e,_) } ]} -> Some e
+            | Some {attr_name = x} ->
                 kerror x.loc
                   "Invalid payload for %s.wrapper; an expression is expected"
                   ocf_att_prefix
@@ -170,7 +172,7 @@ let mk_field l =
           in
           (wrapper, default)
         end
-    | Some (_,PStr [ { pstr_desc = Pstr_eval (e,_) } ]) ->
+    | Some {attr_payload = PStr [ { pstr_desc = Pstr_eval (e,_) } ]} ->
         begin
           match e.pexp_desc with
           | Pexp_tuple[wrapper;default] ->
@@ -179,7 +181,7 @@ let mk_field l =
               kerror e.pexp_loc
                 "Invalid expression; a pair of expressions is expected"
         end
-    | Some (x,_) ->
+    | Some {attr_name = x} ->
         kerror x.loc
           "Invalid expression for %s; a pair of expressions is expected"
           ocf_att_prefix
@@ -199,9 +201,9 @@ let mk_default decl fields =
     let expr =
       match fd.default with
         Some def -> def
-      | None -> Exp.ident (lid fd.name.loc fd.name.txt)
+      | None -> Exp.ident (lid ~loc:fd.name.loc fd.name.txt)
     in
-    (lid fd.name.loc fd.name.txt, expr)
+    (lid ~loc:fd.name.loc fd.name.txt, expr)
   in
   let record = Exp.record (List.map f fields) None in
   let pat = Pat.var
@@ -224,7 +226,7 @@ let mk_wrapper decl fields =
     (List.map fst decl.ptype_params)
   in
   let w_name fd = Printf.sprintf "__wrapper_%s" fd.name.txt in
-  let w_lid fd = Exp.ident (lid fd.name.loc (w_name fd)) in
+  let w_lid fd = Exp.ident (lid ~loc:fd.name.loc (w_name fd)) in
 
   let mk_wrapper expr fd =
     let pat = Pat.var { loc = fd.name.loc ; txt = w_name fd } in
@@ -235,11 +237,11 @@ let mk_wrapper decl fields =
           kerror fd.name.loc
             "Missing Ocf wrapper for field %s" fd.name.txt
       | [], Some e -> e
-      | [param], None -> Exp.ident (lid fd.name.loc ("wrapper_"^param))
+      | [param], None -> Exp.ident (lid ~loc:fd.name.loc ("wrapper_"^param))
       | params, Some e ->
           apply ~loc: fd.name.loc e
             (List.map
-             (fun p -> Exp.ident (lid fd.name.loc ("wrapper_"^p)))
+             (fun p -> Exp.ident (lid ~loc:fd.name.loc ("wrapper_"^p)))
                fd.params)
     in
     [%expr let [%p pat] = [%e app] in [%e expr] ]
@@ -250,7 +252,7 @@ let mk_wrapper decl fields =
         [%expr [%e w_lid fd].Ocf.Wrapper.to_json ?with_doc]
       in
       let fd_exp = Exp.field
-        [%expr t] (lid fd.name.loc (fd.name.txt))
+        [%expr t] (lid ~loc:fd.name.loc (fd.name.txt))
       in
       let assoc =
         [%expr
@@ -281,7 +283,7 @@ let mk_wrapper decl fields =
     let f fd =
       let expr_v =
         let exp_field =
-          Exp.field [%expr def] (lid fd.name.loc (fd.name.txt))
+          Exp.field [%expr def] (lid ~loc:fd.name.loc (fd.name.txt))
         in
         [%expr
           let default =
@@ -290,14 +292,14 @@ let mk_wrapper decl fields =
             | None ->
                 [%e match fd.default with
                 | Some def -> def
-                | None -> Exp.ident (lid fd.name.loc fd.name.txt)
+                | None -> Exp.ident (lid ~loc:fd.name.loc fd.name.txt)
                 ]
           in
           get [%e w_lid fd] default
                     [%e mk_string fd.label.loc fd.label.txt] map
         ]
       in
-      (lid fd.name.loc fd.name.txt, expr_v)
+      (lid ~loc:fd.name.loc fd.name.txt, expr_v)
     in
     Exp.record (List.map f fields) None
   in
@@ -325,7 +327,7 @@ let mk_wrapper decl fields =
             in
             from_assocs assocs def
           end
-      | (json : Yojson.Safe.json) -> Ocf.invalid_value json
+      | (json : Yojson.Safe.t) -> Ocf.invalid_value json
       in
       Ocf.Wrapper.make to_j from_j
     ]

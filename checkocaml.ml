@@ -909,7 +909,7 @@ let add_conf_variables c =
 
 (*/c==m=[OCaml_conf]=0.11=t==*)
 
-let ocaml_required = [4;02;1]
+let ocaml_required = [4;12;0]
 let conf = ocaml_conf ~ocamlfind: true ();;
 print_conf conf;;
 
@@ -923,8 +923,8 @@ let _ =
 let _ = !print "\n### checking required tools and libraries ###\n"
 
 
-let _ = check_ocamlfind_package conf ~min_version: [1;1;8] "yojson"
-let _ = check_ocamlfind_package conf ~min_version: [0;99] "ppx_tools"
+let _ = check_ocamlfind_package conf ~min_version: [1;7;0] "yojson"
+let _ = check_ocamlfind_package conf ~min_version: [6;3] "ppx_tools"
 
 let _ = !print "\n###\n"
 

@@ -33,7 +33,7 @@ let string_of_path = String.concat "."
 
 type error =
 | Json_error of string
-| Invalid_value of Yojson.Safe.json
+| Invalid_value of Yojson.Safe.t
 | Invalid_path of path
 | Path_conflict of path
 | Error_at_path of path * error
@@ -64,8 +64,8 @@ let exn_at_path p e = error (Exn_at_path (p, e))
 module Wrapper =
   struct
     type 'a t = {
-        to_json : ?with_doc: bool -> 'a -> Yojson.Safe.json ;
-        from_json : ?def: 'a -> Yojson.Safe.json -> 'a ;
+        to_json : ?with_doc: bool -> 'a -> Yojson.Safe.t ;
+        from_json : ?def: 'a -> Yojson.Safe.t -> 'a ;
       }
 
     let make to_json from_json = { to_json ; from_json }
@@ -168,7 +168,7 @@ module Wrapper =
       in
       make to_j from_j
 
-    type assocs = (string * Yojson.Safe.json) list
+    type assocs = (string * Yojson.Safe.t) list
     let string_map ~fold ~add ~empty w =
       let to_j ?with_doc map =
         let l =
