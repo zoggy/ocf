@@ -1,6 +1,0 @@
-{
-ignored: [".*\\.git", ".*Makefile", ".*tmpl$" , ".*.mystog.*", ".*/stog-output"],
-documents: [".*\\.xml$", ".*\\.html$"],
-"not-documents": [],
-"follow-symlinks": false
-}
